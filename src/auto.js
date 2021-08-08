@@ -1,9 +1,22 @@
-const { getWindow } = require("./getWindow");
 const robot = require("robotjs");
+// const nodeAbi = require("node-abi");
+// const ioHook = require("iohook");
+const { getWindow } = require("./getWindow");
 const { moveMouseRelToWindow } = require("./moveMouseRelToWindow");
 
+// console.log(nodeAbi.getAbi("13.1.8", "electron"));
+
+// ioHook.on("keypress", (event) => {
+//   console.log(event);
+
+//   // {keychar: 'f', keycode: 19, rawcode: 15, type: 'keypress'}
+// });
+// ioHook.start();
+
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 const logColor = (pixelColor) => {
@@ -50,12 +63,24 @@ const atPrintFillTextInputs = ({
   robot.typeString(amount);
 };
 
-const atPrintClickPrintBtns = async (bounds, printWaitTime = 2000) => {
+const atPrintReplaceAmount = (amount = 1, bounds) => {
+  moveMouseRelToWindow(300, 230, bounds);
+  robot.mouseClick("left", true);
+  robot.keyTap("backspace");
+  robot.typeString(amount);
+};
+
+const atPrintClickPrintBtns = async (bounds, btnClickWaitTime = 2300) => {
   moveMouseRelToWindow(200, 180, bounds, true);
   robot.mouseClick();
-  await sleep(printWaitTime);
+  await sleep(btnClickWaitTime);
   moveMouseRelToWindow(120, 70, bounds, true);
-  // moveMouseRelToWindow(250, 70, bounds, true);
+  robot.mouseClick();
+  await sleep(btnClickWaitTime);
+};
+
+const atPrintClickCloseBtn = (bounds) => {
+  moveMouseRelToWindow(250, 70, bounds, true);
   robot.mouseClick();
 };
 
@@ -97,20 +122,33 @@ const DOMLoaded = () => {
   additionalTextInput = document.getElementById("additionalText");
   amountInput = document.getElementById("amount");
 
-  autoPrint.addEventListener("click", () => {
+  autoPrint.addEventListener("click", async () => {
     const bounds = getAndPrepareEtlogWindow();
     const ssccAmount = ssccAmountInput.value;
     const additionalText = additionalTextInput.value;
     const amount = amountInput.value;
     if (!ssccAmount) return alert("Wypełnij wszystkie pola!");
 
+    const amounts = amount.trim().split(" ");
+    console.log(amounts);
+
     atPrintFillTextInputs({
       ssccAmount,
       additionalText,
-      amount,
+      amount: amounts[0],
       bounds,
     });
-    atPrintClickPrintBtns(bounds);
+    await atPrintClickPrintBtns(bounds);
+
+    for (let i = 1; i < amounts.length; i++) {
+      const currentAmount = amounts[i];
+
+      atPrintReplaceAmount(currentAmount, bounds);
+      // await sleep(1000);
+      await atPrintClickPrintBtns(bounds);
+    }
+
+    atPrintClickCloseBtn(bounds);
   });
 };
 

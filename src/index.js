@@ -1,5 +1,10 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
+try {
+  require("electron-reloader")(module);
+} catch (_) {}
+
+app.allowRendererProcessReuse = false;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {

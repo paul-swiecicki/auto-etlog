@@ -1,17 +1,29 @@
 const robot = require("robotjs");
 // const nodeAbi = require("node-abi");
-// const ioHook = require("iohook");
+const ioHook = require("iohook");
 const { getWindow } = require("./getWindow");
 const { moveMouseRelToWindow } = require("./moveMouseRelToWindow");
 
-// console.log(nodeAbi.getAbi("13.1.8", "electron"));
-
-// ioHook.on("keypress", (event) => {
-//   console.log(event);
-
-//   // {keychar: 'f', keycode: 19, rawcode: 15, type: 'keypress'}
-// });
-// ioHook.start();
+// console.log(nodeAbi.getAbi("12.0.15", "electron"));
+let isEscaped = false;
+const getEscaped = () => {
+  return isEscaped;
+};
+const revertEscaped = () => {
+  if (isEscaped) {
+    isEscaped = false;
+    return true;
+  }
+  return false;
+};
+ioHook.on("keypress", (e) => {
+  if (e.keychar === 27) {
+    isEscaped = true;
+  }
+  console.log(e);
+  // {keychar: 'f', keycode: 19, rawcode: 15, type: 'keypress'}
+});
+ioHook.start();
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -117,30 +129,38 @@ const DOMLoaded = () => {
     }, 1000);
   });
 
-  const autoPrint = document.getElementById("print"),
-    ssccAmountInput = document.getElementById("ssccAmount");
-  additionalTextInput = document.getElementById("additionalText");
-  amountInput = document.getElementById("amount");
+  const autoPrint = document.getElementById("print");
+  const inputs = {
+    ssccAmount: document.getElementById("ssccAmount"),
+    additionalText: document.getElementById("additionalText"),
+    amount: document.getElementById("amount"),
+    maxAmount: document.getElementById("maxAmount"),
+  };
 
   autoPrint.addEventListener("click", async () => {
     const bounds = getAndPrepareEtlogWindow();
-    const ssccAmount = ssccAmountInput.value;
-    const additionalText = additionalTextInput.value;
-    const amount = amountInput.value;
+    const ssccAmount = inputs.ssccAmount.value;
+    const additionalText = inputs.additionalText.value;
+    const amount = inputs.amount.value;
+    const maxAmount = inputs.maxAmount.value;
     if (!ssccAmount) return alert("Wypełnij wszystkie pola!");
 
     const amounts = amount.trim().split(" ");
     console.log(amounts);
 
+    if (getEscaped()) return;
     atPrintFillTextInputs({
-      ssccAmount,
-      additionalText,
+      ssccAmount: ssccAmount,
+      additionalText: additionalText,
       amount: amounts[0],
       bounds,
     });
-    await atPrintClickPrintBtns(bounds);
+    if (getEscaped()) return;
+    await atPrintClickPrintBtns(bounds, 2000);
+    if (getEscaped()) return;
 
     for (let i = 1; i < amounts.length; i++) {
+      if (getEscaped()) return;
       const currentAmount = amounts[i];
 
       atPrintReplaceAmount(currentAmount, bounds);
@@ -148,7 +168,11 @@ const DOMLoaded = () => {
       await atPrintClickPrintBtns(bounds);
     }
 
+    if (getEscaped()) return;
     atPrintClickCloseBtn(bounds);
+
+    if (getEscaped()) return;
+    revertEscaped();
   });
 };
 

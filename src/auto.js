@@ -3,21 +3,29 @@ const robot = require("robotjs");
 const ioHook = require("iohook");
 const { getWindow } = require("./getWindow");
 const { moveMouseRelToWindow } = require("./moveMouseRelToWindow");
+const iohook = require("iohook");
 
 // console.log(nodeAbi.getAbi("12.0.15", "electron"));
 let isEscaped = false;
 const getEscaped = () => {
   return isEscaped;
 };
-const revertEscaped = () => {
-  if (isEscaped) {
-    isEscaped = false;
-    return true;
-  }
-  return false;
+
+let escDetectorInterval = null;
+const escDetector = () => {
+  if (escDetectorInterval) clearInterval(escDetectorInterval);
+  return new Promise((resolve, reject) => {
+    escDetectorInterval = setInterval(() => {
+      if (getEscaped()) {
+        isEscaped = false;
+        resolve("esc");
+      }
+    }, 100);
+  });
 };
+
 ioHook.on("keypress", (e) => {
-  if (e.keychar === 27) {
+  if (e.keychar === 99 && e.ctrlKey) {
     isEscaped = true;
   }
   // {keychar: 'f', keycode: 19, rawcode: 15, type: 'keypress'}
@@ -137,6 +145,10 @@ const DOMLoaded = () => {
   };
 
   autoPrint.addEventListener("click", async () => {
+    escDetector().then(() => {
+      process.exit();
+    });
+
     const bounds = getAndPrepareEtlogWindow();
     const ssccAmount = inputs.ssccAmount.value;
     const additionalText = inputs.additionalText.value;

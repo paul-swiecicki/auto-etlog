@@ -168,6 +168,7 @@ const DOMLoaded = () => {
 
     for (let i = 0; i < amounts.length; i++) {
       const curAmount = amounts[i];
+      if (!curAmount) continue;
 
       if (curAmount > maxAmount) {
         const fullAmounts = Math.floor(curAmount / maxAmount);

@@ -15,3 +15,8 @@ body {
   font-size: 0.85rem;
   display: block;
 }
+
+.printBtn {
+  margin-top: 20px;
+  padding: 10px 30px;
+}

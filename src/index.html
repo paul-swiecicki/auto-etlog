@@ -9,8 +9,6 @@
   <body>
     <h1>Auto EtLog</h1>
     <p>Naciśnij Ctrl + C aby zatrzymać wykonywanie</p>
-    <button id="find">find window</button>
-    <button id="getColor">get color</button>
 
     <div class="inputContainer">
       <label for="ssccAmount">Ilość etykiet z jednakowym SSCC </label>
@@ -18,7 +16,7 @@
     </div>
     <div class="inputContainer">
       <label for="additionalText">Tekst dodatkowy (seria)</label>
-      <input type="text" id="additionalText" value="H 10" />
+      <input type="text" id="additionalText" value="H 12" />
     </div>
     <!-- <div class="spacer"></div> -->
 
@@ -31,15 +29,18 @@
       <label for="amount" class="additionalDesc">
         Oddziel wartości spacjami aby wydrukować wiele razy
       </label>
-      <input type="text" id="amount" value="42" />
+      <input type="text" id="amount" value="23 19" />
     </div>
     <button id="print" class="printBtn">Drukuj</button>
 
     <div class="settings">
       <h3>Ustawienia</h3>
+      <button id="find">find window</button>
+      <button id="getColor">get color</button>
+
       <div class="inputContainer">
         <label for="btnsGenTime">Czas generowania/drukowania w ms </label>
-        <input type="number" id="btnsGenTime" value="2000" />
+        <input type="number" id="btnsGenTime" value="5000" />
       </div>
     </div>
   </body>

@@ -158,7 +158,10 @@ const DOMLoaded = () => {
     const additionalText = inputs.additionalText.value;
     const amount = inputs.amount.value;
     const maxAmount = inputs.maxAmount.value;
-    if (!ssccAmount) return alert("Wypełnij wszystkie pola!");
+    if (!ssccAmount && !additionalText && !amount)
+      return alert("Wypełnij wszystkie wymagane pola!");
+
+    const btnsGenTime = settingsInputs.btnsGenTime.value;
 
     const amounts = amount.trim().split(" ");
     const dividedAmounts = [];
@@ -185,7 +188,7 @@ const DOMLoaded = () => {
       amount: dividedAmounts[0],
       bounds,
     });
-    await atPrintClickPrintBtns(bounds);
+    await atPrintClickPrintBtns(bounds, btnsGenTime);
 
     let prevAmount;
     for (let i = 1; i < dividedAmounts.length; i++) {
@@ -194,7 +197,7 @@ const DOMLoaded = () => {
 
       if (curAmount !== prevAmount) atPrintReplaceAmount(curAmount, bounds);
 
-      await atPrintClickPrintBtns(bounds);
+      await atPrintClickPrintBtns(bounds, btnsGenTime);
       prevAmount = curAmount;
     }
     atPrintClickCloseBtn(bounds);

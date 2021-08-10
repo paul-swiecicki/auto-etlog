@@ -6,17 +6,35 @@ body {
   padding: 2rem;
 }
 
+label {
+  display: block;
+}
+
+input[type="number"] {
+  width: 3.5rem;
+}
+
 .inputContainer {
   margin-top: 1rem;
 }
 
 .additionalDesc {
-  color: #666;
-  font-size: 0.85rem;
+  color: #777;
+  font-size: 0.8rem;
   display: block;
+  margin: 3px 0;
 }
 
 .printBtn {
   margin-top: 20px;
   padding: 10px 30px;
+}
+
+.spacer {
+  margin-top: 30px;
+}
+
+.settings {
+  position: absolute;
+  bottom: 2rem;
 }

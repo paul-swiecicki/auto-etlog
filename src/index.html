@@ -14,11 +14,17 @@
 
     <div class="inputContainer">
       <label for="ssccAmount">Ilość etykiet z jednakowym SSCC </label>
-      <input type="text" id="ssccAmount" value="1" />
+      <input type="number" id="ssccAmount" value="1" />
     </div>
     <div class="inputContainer">
       <label for="additionalText">Tekst dodatkowy (seria)</label>
       <input type="text" id="additionalText" value="H 10" />
+    </div>
+    <!-- <div class="spacer"></div> -->
+
+    <div class="inputContainer">
+      <label for="maxAmount">Max liczba szt. na palecie </label>
+      <input type="number" id="maxAmount" value="10" />
     </div>
     <div class="inputContainer">
       <label for="amount">Liczba szt. na jednostkę </label>
@@ -27,10 +33,14 @@
       </label>
       <input type="text" id="amount" value="42" />
     </div>
-    <div class="inputContainer">
-      <label for="maxAmount">Max liczba szt. na palecie </label>
-      <input type="text" id="maxAmount" value="10" />
-    </div>
     <button id="print" class="printBtn">Drukuj</button>
+
+    <div class="settings">
+      <h3>Ustawienia</h3>
+      <div class="inputContainer">
+        <label for="btnsGenTime">Czas generowania/drukowania w ms </label>
+        <input type="number" id="btnsGenTime" value="2000" />
+      </div>
+    </div>
   </body>
 </html>

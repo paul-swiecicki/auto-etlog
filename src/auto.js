@@ -144,6 +144,10 @@ const DOMLoaded = () => {
     maxAmount: document.getElementById("maxAmount"),
   };
 
+  const settingsInputs = {
+    btnsGenTime: document.getElementById("btnsGenTime"),
+  };
+
   autoPrint.addEventListener("click", async () => {
     escDetector().then(() => {
       process.exit();
@@ -157,33 +161,43 @@ const DOMLoaded = () => {
     if (!ssccAmount) return alert("Wypełnij wszystkie pola!");
 
     const amounts = amount.trim().split(" ");
-    console.log(amounts);
+    const dividedAmounts = [];
 
-    if (getEscaped()) return;
+    for (let i = 0; i < amounts.length; i++) {
+      const curAmount = amounts[i];
+
+      if (curAmount > maxAmount) {
+        const fullAmounts = Math.floor(curAmount / maxAmount);
+        const rest = curAmount % maxAmount;
+
+        for (let j = 0; j < fullAmounts; j++) {
+          dividedAmounts.push(maxAmount);
+        }
+        dividedAmounts.push(rest);
+      } else {
+        dividedAmounts.push(curAmount);
+      }
+    }
+
     atPrintFillTextInputs({
       ssccAmount: ssccAmount,
       additionalText: additionalText,
-      amount: amounts[0],
+      amount: dividedAmounts[0],
       bounds,
     });
-    if (getEscaped()) return;
-    await atPrintClickPrintBtns(bounds, 2000);
-    if (getEscaped()) return;
+    await atPrintClickPrintBtns(bounds);
 
-    for (let i = 1; i < amounts.length; i++) {
-      if (getEscaped()) return;
-      const currentAmount = amounts[i];
+    let prevAmount;
+    for (let i = 1; i < dividedAmounts.length; i++) {
+      const curAmount = dividedAmounts[i];
+      console.log({ curAmount, prevAmount });
 
-      atPrintReplaceAmount(currentAmount, bounds);
-      // await sleep(1000);
+      if (curAmount !== prevAmount) atPrintReplaceAmount(curAmount, bounds);
+
       await atPrintClickPrintBtns(bounds);
+      prevAmount = curAmount;
     }
-
-    if (getEscaped()) return;
     atPrintClickCloseBtn(bounds);
-
-    if (getEscaped()) return;
-    revertEscaped();
   });
 };
 

@@ -6,15 +6,19 @@ body {
   padding: 2rem;
 }
 
-label {
-  display: block;
-}
-
 input[type="number"] {
   width: 3.5rem;
 }
 
 .inputContainer {
+  margin-top: 1rem;
+}
+
+.inputContainer label {
+  display: block;
+}
+
+.checkboxContainer {
   margin-top: 1rem;
 }
 

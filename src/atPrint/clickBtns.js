@@ -1,3 +1,5 @@
+const { moveMouseRelToWindow } = require("../moveMouseRelToWindow");
+const { sleep } = require("../utils/sleep");
 const robot = require("robotjs");
 
 const clickPrintBtns = async (bounds, btnClickWaitTime = 2300) => {

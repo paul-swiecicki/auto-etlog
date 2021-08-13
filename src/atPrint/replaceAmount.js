@@ -1,4 +1,5 @@
 const robot = require("robotjs");
+const { moveMouseRelToWindow } = require("../moveMouseRelToWindow");
 
 const replaceAmount = (amount = 1, bounds) => {
   moveMouseRelToWindow(300, 230, bounds);

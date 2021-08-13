@@ -1,42 +1,11 @@
-const robot = require("robotjs");
 // const nodeAbi = require("node-abi");
-const ioHook = require("iohook");
-const { getWindow } = require("./getWindow");
-const { moveMouseRelToWindow } = require("./moveMouseRelToWindow");
-const iohook = require("iohook");
 
+const { getWindow } = require("./utils/getWindow");
+const { escDetector } = require("./utils/escDetector");
+const { fillTextInputs } = require("./atPrint/fillTextInputs");
+const { replaceAmount } = require("./atPrint/replaceAmount");
+const { clickPrintBtns, clickCloseBtn } = require("./atPrint/clickBtns");
 // console.log(nodeAbi.getAbi("12.0.15", "electron"));
-let isEscaped = false;
-const getEscaped = () => {
-  return isEscaped;
-};
-
-let escDetectorInterval = null;
-const escDetector = () => {
-  if (escDetectorInterval) clearInterval(escDetectorInterval);
-  return new Promise((resolve, reject) => {
-    escDetectorInterval = setInterval(() => {
-      if (getEscaped()) {
-        isEscaped = false;
-        resolve("esc");
-      }
-    }, 100);
-  });
-};
-
-ioHook.on("keypress", (e) => {
-  if (e.keychar === 99 && e.ctrlKey) {
-    isEscaped = true;
-  }
-  // {keychar: 'f', keycode: 19, rawcode: 15, type: 'keypress'}
-});
-ioHook.start();
-
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
 
 const logColor = (pixelColor) => {
   console.log(`%c ${pixelColor}`, `color: white; background: #${pixelColor}`);
@@ -62,45 +31,6 @@ const getAndPrepareEtlogWindow = () => {
   // console.log(bounds);
   // const bitmap = robot.screen.capture(bounds.x, bounds.y, 350, bounds.height);
   return bounds;
-};
-
-const atPrintFillTextInputs = ({
-  ssccAmount = 1,
-  additionalText = "A 01",
-  amount = 1,
-  bounds,
-}) => {
-  moveMouseRelToWindow(220, 100, bounds);
-  robot.mouseClick();
-  robot.keyTap("backspace");
-  robot.typeString(ssccAmount);
-  robot.keyTap("tab");
-  robot.keyTap("tab");
-  robot.typeString(additionalText);
-  robot.keyTap("tab");
-  robot.keyTap("delete");
-  robot.typeString(amount);
-};
-
-const atPrintReplaceAmount = (amount = 1, bounds) => {
-  moveMouseRelToWindow(300, 230, bounds);
-  robot.mouseClick("left", true);
-  robot.keyTap("backspace");
-  robot.typeString(amount);
-};
-
-const atPrintClickPrintBtns = async (bounds, btnClickWaitTime = 2300) => {
-  moveMouseRelToWindow(200, 180, bounds, true);
-  robot.mouseClick();
-  await sleep(btnClickWaitTime);
-  moveMouseRelToWindow(120, 70, bounds, true);
-  robot.mouseClick();
-  await sleep(btnClickWaitTime);
-};
-
-const atPrintClickCloseBtn = (bounds) => {
-  moveMouseRelToWindow(250, 70, bounds, true);
-  robot.mouseClick();
 };
 
 const DOMLoaded = () => {
@@ -146,6 +76,7 @@ const DOMLoaded = () => {
 
   const settingsInputs = {
     btnsGenTime: document.getElementById("btnsGenTime"),
+    isBiedronka: document.getElementById("isBiedronka"),
   };
 
   autoPrint.addEventListener("click", async () => {
@@ -158,7 +89,7 @@ const DOMLoaded = () => {
     const additionalText = inputs.additionalText.value;
     const amount = inputs.amount.value;
     const maxAmount = inputs.maxAmount.value;
-    if (!ssccAmount && !additionalText && !amount)
+    if (!ssccAmount || !additionalText || !amount)
       return alert("Wypełnij wszystkie wymagane pola!");
 
     const btnsGenTime = settingsInputs.btnsGenTime.value;
@@ -183,25 +114,28 @@ const DOMLoaded = () => {
       }
     }
 
-    atPrintFillTextInputs({
+    const isBiedronka = settingsInputs.isBiedronka.checked;
+    console.log({ isBiedronka });
+    fillTextInputs({
       ssccAmount: ssccAmount,
       additionalText: additionalText,
       amount: dividedAmounts[0],
       bounds,
+      isBiedronka,
     });
-    await atPrintClickPrintBtns(bounds, btnsGenTime);
+    await clickPrintBtns(bounds, btnsGenTime);
 
     let prevAmount;
     for (let i = 1; i < dividedAmounts.length; i++) {
       const curAmount = dividedAmounts[i];
       console.log({ curAmount, prevAmount });
 
-      if (curAmount !== prevAmount) atPrintReplaceAmount(curAmount, bounds);
+      if (curAmount !== prevAmount) replaceAmount(curAmount, bounds);
 
-      await atPrintClickPrintBtns(bounds, btnsGenTime);
+      await clickPrintBtns(bounds, btnsGenTime);
       prevAmount = curAmount;
     }
-    atPrintClickCloseBtn(bounds);
+    clickCloseBtn(bounds);
   });
 };
 

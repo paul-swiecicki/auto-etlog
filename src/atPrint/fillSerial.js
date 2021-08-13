@@ -1,4 +1,5 @@
 const robot = require("robotjs");
+const { getDateArray } = require("../utils/getDateArray");
 
 // const atPrintFillDate = (date) => {
 //   const dateArray = getDateArray(date);

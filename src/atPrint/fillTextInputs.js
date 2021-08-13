@@ -1,4 +1,6 @@
 const robot = require("robotjs");
+const { moveMouseRelToWindow } = require("../moveMouseRelToWindow");
+const { fillSerial } = require("./fillSerial");
 
 const fillTextInputs = ({
   ssccAmount = 1,
@@ -15,7 +17,7 @@ const fillTextInputs = ({
   robot.keyTap("tab");
   if (isBiedronka) {
     // robot.keyTap("a", "control");
-    atPrintFillSerial();
+    fillSerial();
     robot.keyTap("tab");
     // atPrintFillDate();
   } else {

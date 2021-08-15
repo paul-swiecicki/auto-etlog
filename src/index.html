@@ -2,51 +2,90 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
+    <!-- <title>Auto EtLog</title> -->
     <link rel="stylesheet" href="index.css" />
     <!-- <script src="auto.js" defer></script> -->
   </head>
   <body>
-    <h1>Auto EtLog</h1>
-    <p>Naciśnij Ctrl + C aby zatrzymać wykonywanie</p>
+    <main>
+      <h1>Auto EtLog</h1>
+      <p>Naciśnij Ctrl + C aby zatrzymać wykonywanie</p>
 
-    <div class="inputContainer">
-      <label for="ssccAmount">Ilość etykiet z jednakowym SSCC </label>
-      <input type="number" id="ssccAmount" value="2" />
-    </div>
-    <div class="inputContainer">
-      <label for="additionalText">Tekst dodatkowy (seria)</label>
-      <input type="text" id="additionalText" value="H 12" />
-    </div>
-    <!-- <div class="spacer"></div> -->
+      <form>
+        <div class="inputContainer">
+          <label for="ssccAmount">Ilość etykiet z jednakowym SSCC </label>
+          <input type="number" id="ssccAmount" value="2" required />
+        </div>
+        <div class="inputContainer">
+          <label for="additionalText">Tekst dodatkowy (seria)</label>
+          <input type="text" id="additionalText" value="H 12" required />
+        </div>
+        <!-- <div class="spacer"></div> -->
 
-    <div class="inputContainer">
-      <label for="maxAmount">Max liczba szt. na palecie </label>
-      <input type="number" id="maxAmount" value="100" />
-    </div>
-    <div class="inputContainer">
-      <label for="amount">Liczba szt. na jednostkę </label>
-      <label for="amount" class="additionalDesc">
-        Oddziel wartości spacjami aby wydrukować wiele razy
-      </label>
-      <input type="text" id="amount" value="23 19" />
-    </div>
-    <button id="print" class="printBtn">Drukuj</button>
+        <div class="inputContainer">
+          <label for="maxAmount">Max liczba szt. na palecie </label>
+          <input type="number" id="maxAmount" value="100" required />
+        </div>
+        <div class="inputContainer">
+          <label for="amount">Liczba szt. na jednostkę </label>
+          <label for="amount" class="additionalDesc">
+            Oddziel wartości spacjami aby wydrukować wiele razy
+          </label>
+          <input type="text" id="amount" value="23 19" required />
+        </div>
+        <button id="print" class="printBtn">Drukuj</button>
 
-    <div class="settings">
-      <h3>Ustawienia</h3>
-      <button id="find">find window</button>
-      <button id="getColor">get color</button>
+        <div id="resultContainer" class="resultContainer unactive">
+          <svg
+            class="success"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z"
+            />
+          </svg>
+          <svg
+            class="error"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M16.142 2l5.858 5.858v8.284l-5.858 5.858h-8.284l-5.858-5.858v-8.284l5.858-5.858h8.284zm.829-2h-9.942l-7.029 7.029v9.941l7.029 7.03h9.941l7.03-7.029v-9.942l-7.029-7.029zm-5.971 6h2v8h-2v-8zm1 12.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"
+            />
+          </svg>
+          <div class="textContainer">
+            <div id="resultMsg" class="resultMsg"></div>
+            <div id="resultDesc" class="resultDesc"></div>
+          </div>
+        </div>
+      </form>
+    </main>
 
-      <div class="inputContainer">
-        <label for="btnsGenTime">Czas generowania/drukowania w ms </label>
-        <input type="number" id="btnsGenTime" value="2500" />
+    <section>
+      <div class="settings">
+        <h3>Ustawienia</h3>
+        <button id="find">find window</button>
+        <button id="getColor">get color</button>
+        <div class="inputContainer">
+          <label for="btnsGenTime">Czas generowania/drukowania w ms </label>
+          <input type="number" id="btnsGenTime" value="2500" required />
+        </div>
+        <div class="inputContainer">
+          <label for="printWindowLoadTime"
+            >Czas otwierania okna drukowania
+          </label>
+          <input type="number" id="printWindowLoadTime" value="1500" required />
+        </div>
+        <div class="checkboxContainer">
+          <input type="checkbox" id="isDateInput" />
+          <label for="isDateInput">Dodatkowe pole daty (data pakowania)</label>
+        </div>
       </div>
-
-      <div class="checkboxContainer">
-        <input type="checkbox" id="isBiedronka" value="2500" />
-        <label for="isBiedronka">Biedronka</label>
-      </div>
-    </div>
+    </section>
   </body>
 </html>

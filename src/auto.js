@@ -1,36 +1,38 @@
 // const nodeAbi = require("node-abi");
+const robot = require("robotjs");
 
 const { getWindow } = require("./utils/getWindow");
-const { escDetector } = require("./utils/escDetector");
+const { escDetector } = require("./helpers/escDetector");
 const { fillTextInputs } = require("./atPrint/fillTextInputs");
 const { replaceAmount } = require("./atPrint/replaceAmount");
 const { clickPrintBtns, clickCloseBtn } = require("./atPrint/clickBtns");
-// console.log(nodeAbi.getAbi("12.0.15", "electron"));
+const { moveMouseRelToWindow } = require("./utils/moveMouseRelToWindow");
+const atProducts = require("./atProducts");
+const { getDividedAmounts } = require("./helpers/getDividedAmounts");
+const { hideResultBox, showResultBox } = require("./helpers/manageResultBox");
+const { getElementsById } = require("./utils/getElementsById");
+const { getElementsValues } = require("./utils/getElementsValues");
 
 const logColor = (pixelColor) => {
   console.log(`%c ${pixelColor}`, `color: white; background: #${pixelColor}`);
 };
 
-const findColorAndLog = ({ bitmap, width, height, color, pixelsAmount }) => {
-  for (let i = 0; i < width - 1; i++) {
-    for (let j = 0; j < height - 1; j++) {
+const findColor = ({ bitmap, colors }) => {
+  for (let i = 0; i < bitmap.width; i++) {
+    for (let j = 0; j < bitmap.height; j++) {
       const pixelColor = bitmap.colorAt(i, j);
-
-      if (pixelColor === color) return { i, j };
-
-      // if (j === 300) return j;
+      console.log({ x: i, y: j, pixelColor });
+      if (colors.includes(pixelColor)) return { x: i, y: j };
     }
   }
+  console.log(colors);
   return null;
 };
 
 const getAndPrepareEtlogWindow = () => {
   const window = getWindow("etlog");
   window.bringToTop();
-  const bounds = window.getBounds();
-  // console.log(bounds);
-  // const bitmap = robot.screen.capture(bounds.x, bounds.y, 350, bounds.height);
-  return bounds;
+  return window;
 };
 
 const DOMLoaded = () => {
@@ -66,64 +68,67 @@ const DOMLoaded = () => {
     }, 1000);
   });
 
+  // todo get color where 'nazwa' is (if white) then its product page
+
   const autoPrint = document.getElementById("print");
-  const inputs = {
-    ssccAmount: document.getElementById("ssccAmount"),
-    additionalText: document.getElementById("additionalText"),
-    amount: document.getElementById("amount"),
-    maxAmount: document.getElementById("maxAmount"),
-  };
 
-  const settingsInputs = {
-    btnsGenTime: document.getElementById("btnsGenTime"),
-    isBiedronka: document.getElementById("isBiedronka"),
-  };
+  const inputs = getElementsById([
+    "ssccAmount",
+    "additionalText",
+    "amount",
+    "maxAmount",
+  ]);
 
-  autoPrint.addEventListener("click", async () => {
+  const settingsInputs = getElementsById([
+    "btnsGenTime",
+    "isDateInput",
+    "printWindowLoadTime",
+  ]);
+
+  autoPrint.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    hideResultBox();
+
+    const colorForValidation = robot.getPixelColor(260, 70);
+    console.log(colorForValidation);
+
     escDetector().then(() => {
       process.exit();
     });
 
-    const bounds = getAndPrepareEtlogWindow();
-    const ssccAmount = inputs.ssccAmount.value;
-    const additionalText = inputs.additionalText.value;
-    const amount = inputs.amount.value;
-    const maxAmount = inputs.maxAmount.value;
-    if (!ssccAmount || !additionalText || !amount)
-      return alert("Wypełnij wszystkie wymagane pola!");
+    const etlogWindow = getAndPrepareEtlogWindow();
+    const bounds = etlogWindow.getBounds();
 
-    const btnsGenTime = settingsInputs.btnsGenTime.value;
+    const inputsValues = getElementsValues(inputs);
+    const settingsValues = getElementsValues(settingsInputs);
 
-    const amounts = amount.trim().split(" ");
-    const dividedAmounts = [];
+    const dividedAmounts = getDividedAmounts(inputsValues);
 
-    for (let i = 0; i < amounts.length; i++) {
-      const curAmount = amounts[i];
-      if (!curAmount) continue;
+    const isDateInput = settingsInputs.isDateInput.checked;
 
-      if (curAmount > maxAmount) {
-        const fullAmounts = Math.floor(curAmount / maxAmount);
-        const rest = curAmount % maxAmount;
-
-        for (let j = 0; j < fullAmounts; j++) {
-          dividedAmounts.push(maxAmount);
-        }
-        dividedAmounts.push(rest);
-      } else {
-        dividedAmounts.push(curAmount);
-      }
+    try {
+      await atProducts.clickPrintBtn(
+        bounds,
+        settingsValues.printWindowLoadTime
+      );
+    } catch (err) {
+      if (err.message === atProducts.windowTooSmallError)
+        return showResultBox({
+          msg: 'Okno EtLog jest zbyt małe aby było możliwe kliknięcie przycisku "drukuj".',
+          desc: "Powiększ okno i spróbuj ponownie.",
+          type: "error",
+        });
     }
 
-    const isBiedronka = settingsInputs.isBiedronka.checked;
-    console.log({ isBiedronka });
     fillTextInputs({
-      ssccAmount: ssccAmount,
-      additionalText: additionalText,
+      ssccAmount: inputsValues.ssccAmount,
+      additionalText: inputsValues.additionalText,
       amount: dividedAmounts[0],
       bounds,
-      isBiedronka,
+      isDateInput,
     });
-    await clickPrintBtns(bounds, btnsGenTime);
+    await clickPrintBtns(bounds, settingsValues.btnsGenTime);
 
     let prevAmount;
     for (let i = 1; i < dividedAmounts.length; i++) {
@@ -132,10 +137,15 @@ const DOMLoaded = () => {
 
       if (curAmount !== prevAmount) replaceAmount(curAmount, bounds);
 
-      await clickPrintBtns(bounds, btnsGenTime);
+      await clickPrintBtns(bounds, settingsValues.btnsGenTime);
       prevAmount = curAmount;
     }
     clickCloseBtn(bounds);
+
+    showResultBox({
+      msg: `Zrobione! Ilości: "${inputsValues.amount}"`,
+      desc: `Podzielone na (${dividedAmounts})`,
+    });
   });
 };
 

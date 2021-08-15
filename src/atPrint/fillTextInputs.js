@@ -1,22 +1,23 @@
 const robot = require("robotjs");
-const { moveMouseRelToWindow } = require("../moveMouseRelToWindow");
+const { moveMouseRelToWindow } = require("../utils/moveMouseRelToWindow");
 const { fillSerial } = require("./fillSerial");
 
 const fillTextInputs = ({
   ssccAmount = 1,
   additionalText = "A 01",
   amount = 1,
-  isBiedronka = false,
+  isDateInput = false,
   bounds,
 }) => {
   moveMouseRelToWindow(220, 100, bounds);
   robot.mouseClick();
   robot.keyTap("backspace");
+  robot.keyTap("a", "control");
   robot.typeString(ssccAmount);
   robot.keyTap("tab");
   robot.keyTap("tab");
-  if (isBiedronka) {
-    // robot.keyTap("a", "control");
+  if (isDateInput) {
+    robot.keyTap("a", "control");
     fillSerial();
     robot.keyTap("tab");
     // atPrintFillDate();
@@ -25,7 +26,7 @@ const fillTextInputs = ({
     robot.typeString(additionalText);
   }
   robot.keyTap("tab");
-  robot.keyTap("delete");
+  robot.keyTap("a", "control");
   robot.typeString(amount);
 };
 

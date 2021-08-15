@@ -1,11 +1,11 @@
 const robot = require("robotjs");
-const { moveMouseRelToWindow } = require("../moveMouseRelToWindow");
+const { moveMouseRelToWindow } = require("../utils/moveMouseRelToWindow");
 
 const replaceAmount = (amount = 1, bounds) => {
+  console.log(amount);
   moveMouseRelToWindow(300, 230, bounds);
-  // robot.mouseClick("left", true);
+  robot.mouseClick();
   robot.keyTap("a", "control");
-  robot.keyTap("backspace");
   robot.typeString(amount);
 };
 

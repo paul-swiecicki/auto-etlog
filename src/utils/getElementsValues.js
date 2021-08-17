@@ -1,3 +1,5 @@
+const { storeSet } = require("../store");
+
 const getElementsValues = (elements = {}) => {
   const values = {};
   for (const key in elements) {
@@ -6,6 +8,7 @@ const getElementsValues = (elements = {}) => {
       const value = element.value;
 
       values[key] = value;
+      storeSet(key, value);
     }
   }
   return values;

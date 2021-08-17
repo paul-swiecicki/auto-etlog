@@ -1,6 +1,12 @@
+const { storeGet } = require("../store");
+
 const getElementsById = (ids = []) => {
   return ids.reduce((acc, cur) => {
-    acc[cur] = document.getElementById(cur);
+    const element = document.getElementById(cur);
+    acc[cur] = element;
+    const valueFromStore = storeGet(cur);
+    if (valueFromStore) element.value = valueFromStore;
+
     return acc;
   }, {});
 };

@@ -9,7 +9,7 @@
   <body>
     <main>
       <h1>Auto EtLog</h1>
-      <p>Naciśnij Ctrl + C aby zatrzymać wykonywanie</p>
+      <p>Naciśnij <kbd>Ctrl</kbd> + <kbd>C</kbd> aby zatrzymać wykonywanie</p>
 
       <form>
         <div class="inputContainer">
@@ -31,7 +31,13 @@
           <label for="amount" class="additionalDesc">
             Oddziel wartości spacjami aby wydrukować wiele razy
           </label>
-          <input type="text" id="amount" value="23 19" required />
+          <input
+            type="text"
+            id="amount"
+            value="23 19"
+            required
+            onClick="this.select();"
+          />
         </div>
         <button id="print" class="printBtn">Drukuj</button>
 
@@ -58,6 +64,20 @@
               d="M16.142 2l5.858 5.858v8.284l-5.858 5.858h-8.284l-5.858-5.858v-8.284l5.858-5.858h8.284zm.829-2h-9.942l-7.029 7.029v9.941l7.029 7.03h9.941l7.03-7.029v-9.942l-7.029-7.029zm-5.971 6h2v8h-2v-8zm1 12.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"
             />
           </svg>
+          <svg
+            class="warning"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 5.177l8.631 15.823h-17.262l8.631-15.823zm0-4.177l-12 22h24l-12-22zm-1 9h2v6h-2v-6zm1 9.75c-.689 0-1.25-.56-1.25-1.25s.561-1.25 1.25-1.25 1.25.56 1.25 1.25-.561 1.25-1.25 1.25z"
+            />
+          </svg>
+          <path
+            d="M16.142 2l5.858 5.858v8.284l-5.858 5.858h-8.284l-5.858-5.858v-8.284l5.858-5.858h8.284zm.829-2h-9.942l-7.029 7.029v9.941l7.029 7.03h9.941l7.03-7.029v-9.942l-7.029-7.029zm-5.971 6h2v8h-2v-8zm1 12.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"
+          />
           <div class="textContainer">
             <div id="resultMsg" class="resultMsg"></div>
             <div id="resultDesc" class="resultDesc"></div>

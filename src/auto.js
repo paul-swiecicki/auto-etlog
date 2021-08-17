@@ -1,17 +1,15 @@
 // const nodeAbi = require("node-abi");
 const robot = require("robotjs");
 
-const { getWindow } = require("./utils/getWindow");
-const { escDetector } = require("./helpers/escDetector");
-const { fillTextInputs } = require("./atPrint/fillTextInputs");
-const { replaceAmount } = require("./atPrint/replaceAmount");
-const { clickPrintBtns, clickCloseBtn } = require("./atPrint/clickBtns");
-const { moveMouseRelToWindow } = require("./utils/moveMouseRelToWindow");
+const atPrint = require("./atPrint");
 const atProducts = require("./atProducts");
+const { escDetector } = require("./helpers/escDetector");
 const { getDividedAmounts } = require("./helpers/getDividedAmounts");
 const { hideResultBox, showResultBox } = require("./helpers/manageResultBox");
+const { getWindow } = require("./utils/getWindow");
 const { getElementsById } = require("./utils/getElementsById");
 const { getElementsValues } = require("./utils/getElementsValues");
+const { leftEdgeX, topEdgeY } = require("./utils/getRelativeCords");
 
 const logColor = (pixelColor) => {
   console.log(`%c ${pixelColor}`, `color: white; background: #${pixelColor}`);
@@ -31,7 +29,9 @@ const findColor = ({ bitmap, colors }) => {
 
 const getAndPrepareEtlogWindow = () => {
   const window = getWindow("etlog");
-  window.bringToTop();
+  window.restore();
+  // window.bringToTop();
+
   return window;
 };
 
@@ -68,7 +68,11 @@ const DOMLoaded = () => {
     }, 1000);
   });
 
-  // todo get color where 'nazwa' is (if white) then its product page
+  showResultBox({
+    msg: "Zanim zaczniemy",
+    desc: "Pamiętaj aby zmaksymalizować wewnętrzne okno (z produktami) w EtLogu",
+    type: "warning",
+  });
 
   const autoPrint = document.getElementById("print");
 
@@ -90,22 +94,50 @@ const DOMLoaded = () => {
 
     hideResultBox();
 
-    const colorForValidation = robot.getPixelColor(260, 70);
-    console.log(colorForValidation);
+    const etlogWindow = getAndPrepareEtlogWindow();
+    if (!etlogWindow)
+      return showResultBox({
+        msg: "Nie znaleziono EtLoga",
+        desc: "Upewnij się, że EtLog jest otwarty.",
+        type: "error",
+      });
+    const bounds = etlogWindow.getBounds();
+
+    console.log(leftEdgeX(260, bounds), topEdgeY(70, bounds));
+    try {
+      const colorForValidation = robot.getPixelColor(
+        leftEdgeX(260, bounds),
+        topEdgeY(70, bounds)
+      );
+      if (colorForValidation !== "ffffff") {
+        return showResultBox({
+          msg: "Wygląda na to, że coś jest nie tak.",
+          desc: "Upewnij się, że w EtLogu jest otwarte i zmaksymalizowane okno produktów.",
+          type: "error",
+        });
+      }
+    } catch (err) {
+      return showResultBox({
+        msg: "okno zle.",
+        desc: "Upewnij się, że w EtLogu jest otwarte i zmaksymalizowane okno produktów.",
+        type: "error",
+      });
+    }
 
     escDetector().then(() => {
       process.exit();
     });
 
-    const etlogWindow = getAndPrepareEtlogWindow();
-    const bounds = etlogWindow.getBounds();
-
-    const inputsValues = getElementsValues(inputs);
     const settingsValues = getElementsValues(settingsInputs);
+    const inputsValues = getElementsValues(inputs);
 
+    if (!inputsValues.amount) {
+      return showResultBox({
+        msg: "Pole 'Liczba szt. na jednostkę' jest wymagane",
+        type: "error",
+      });
+    }
     const dividedAmounts = getDividedAmounts(inputsValues);
-
-    const isDateInput = settingsInputs.isDateInput.checked;
 
     try {
       await atProducts.clickPrintBtn(
@@ -121,26 +153,28 @@ const DOMLoaded = () => {
         });
     }
 
-    fillTextInputs({
+    const isDateInput = settingsInputs.isDateInput.checked;
+
+    atPrint.fillTextInputs({
       ssccAmount: inputsValues.ssccAmount,
       additionalText: inputsValues.additionalText,
       amount: dividedAmounts[0],
       bounds,
       isDateInput,
     });
-    await clickPrintBtns(bounds, settingsValues.btnsGenTime);
+    await atPrint.clickPrintBtns(bounds, settingsValues.btnsGenTime);
 
     let prevAmount;
     for (let i = 1; i < dividedAmounts.length; i++) {
       const curAmount = dividedAmounts[i];
       console.log({ curAmount, prevAmount });
 
-      if (curAmount !== prevAmount) replaceAmount(curAmount, bounds);
+      if (curAmount !== prevAmount) atPrint.replaceAmount(curAmount, bounds);
 
-      await clickPrintBtns(bounds, settingsValues.btnsGenTime);
+      await atPrint.clickPrintBtns(bounds, settingsValues.btnsGenTime);
       prevAmount = curAmount;
     }
-    clickCloseBtn(bounds);
+    atPrint.clickCloseBtn(bounds);
 
     showResultBox({
       msg: `Zrobione! Ilości: "${inputsValues.amount}"`,

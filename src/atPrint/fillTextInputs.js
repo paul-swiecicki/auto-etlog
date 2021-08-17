@@ -18,7 +18,8 @@ const fillTextInputs = ({
   robot.keyTap("tab");
   if (isDateInput) {
     robot.keyTap("a", "control");
-    fillSerial();
+    robot.typeString(additionalText);
+    // fillSerial();
     robot.keyTap("tab");
     // atPrintFillDate();
   } else {

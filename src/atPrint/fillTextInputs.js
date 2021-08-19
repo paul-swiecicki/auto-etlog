@@ -2,8 +2,12 @@ const robot = require("robotjs");
 const { moveMouseRelToWindow } = require("../utils/moveMouseRelToWindow");
 const { fillSerial } = require("./fillSerial");
 
+const defaultSsccAmount = 2;
+const defaultPages = 1;
+
 const fillTextInputs = ({
   ssccAmount = 1,
+  pages = 1,
   additionalText = "A 01",
   amount = 1,
   isDateInput = false,
@@ -11,10 +15,15 @@ const fillTextInputs = ({
 }) => {
   moveMouseRelToWindow(220, 100, bounds);
   robot.mouseClick();
-  robot.keyTap("backspace");
-  robot.keyTap("a", "control");
-  robot.typeString(ssccAmount);
+  if (ssccAmount != defaultSsccAmount) {
+    robot.keyTap("backspace");
+    robot.typeString(ssccAmount);
+  }
   robot.keyTap("tab");
+  if (pages != defaultPages) {
+    robot.keyTap("a", "control");
+    robot.typeString(pages);
+  }
   robot.keyTap("tab");
   if (isDateInput) {
     robot.keyTap("a", "control");

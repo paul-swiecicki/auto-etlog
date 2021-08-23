@@ -3,16 +3,18 @@ const robot = require("robotjs");
 
 const atPrint = require("./atPrint");
 const atProducts = require("./atProducts");
-const { escDetector } = require("./helpers/escDetector");
+const { escDetector, clearEscDetector } = require("./helpers/escDetector");
 const { getDividedAmounts } = require("./helpers/getDividedAmounts");
 const { hideResultBox, showResultBox } = require("./helpers/manageResultBox");
 const { getWindow } = require("./utils/getWindow");
 const { getElementsById } = require("./utils/getElementsById");
 const { getElementsValues } = require("./utils/getElementsValues");
+const { storeGet } = require("./store");
 const { leftEdgeX, topEdgeY } = require("./utils/getRelativeCords");
 const { sleep } = require("./utils/sleep");
 const { displayDividedAmounts } = require("./helpers/displayDividedAmounts");
 const { storeElementsValues } = require("./utils/storeElementsValues");
+
 const { addListeners } = require("./helpers/addListeners");
 
 const logColor = (pixelColor) => {
@@ -94,12 +96,14 @@ const DOMLoaded = () => {
 
   addListeners();
 
-  autoPrint.addEventListener("click", async (e) => {
+  const printBtn = document.getElementById("print");
+  printBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
     hideResultBox();
 
     const etlogWindow = getAndPrepareEtlogWindow();
+    await sleep(150);
     if (!etlogWindow)
       return showResultBox({
         msg: "Nie znaleziono EtLoga",
@@ -108,33 +112,41 @@ const DOMLoaded = () => {
       });
     const bounds = etlogWindow.getBounds();
 
-    console.log(leftEdgeX(260, bounds), topEdgeY(70, bounds));
-    try {
-      const colorForValidation = robot.getPixelColor(
-        leftEdgeX(260, bounds),
-        topEdgeY(70, bounds)
-      );
-      if (colorForValidation !== "ffffff") {
+    const settingsBoxesValues = getElementsValues(settingsCheckboxes, true);
+    storeElementsValues(settingsBoxesValues);
+    const settingsValues = getElementsValues(settingsInputs);
+    storeElementsValues(settingsValues);
+    const inputsValues = getElementsValues(inputs);
+    storeElementsValues(inputsValues);
+
+    if (settingsBoxesValues.doValidate) {
+      try {
+        const colorForValidation = robot.getPixelColor(
+          leftEdgeX(260, bounds),
+          topEdgeY(70, bounds)
+        );
+        console.log(colorForValidation);
+        if (
+          colorForValidation !== "ffffff" &&
+          colorForValidation !== "e3e3e3"
+        ) {
+          return showResultBox({
+            msg: "Wygląda na to, że coś jest nie tak.",
+            desc: "Upewnij się, że w EtLogu jest otwarte i zmaksymalizowane okno produktów.",
+            type: "error",
+          });
+        }
+      } catch (err) {
         return showResultBox({
-          msg: "Wygląda na to, że coś jest nie tak.",
-          desc: "Upewnij się, że w EtLogu jest otwarte i zmaksymalizowane okno produktów.",
+          msg: "Nie znaleziono okna EtLog",
+          desc: "Prawdopodobnie okno EtLog jest zminimalizowane lub jest poza ekranem.",
           type: "error",
         });
       }
-    } catch (err) {
-      return showResultBox({
-        msg: "okno zle.",
-        desc: "Upewnij się, że w EtLogu jest otwarte i zmaksymalizowane okno produktów.",
-        type: "error",
-      });
     }
-
     escDetector().then(() => {
       process.exit();
     });
-
-    const settingsValues = getElementsValues(settingsInputs);
-    const inputsValues = getElementsValues(inputs);
 
     if (!inputsValues.amount) {
       return showResultBox({

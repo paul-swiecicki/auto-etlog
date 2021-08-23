@@ -1,11 +1,13 @@
 const { storeGet } = require("../store");
 
-const getElementsById = (ids = []) => {
+const getElementsById = (ids = [], checkStore = true) => {
   return ids.reduce((acc, cur) => {
     const element = document.getElementById(cur);
     acc[cur] = element;
-    const valueFromStore = storeGet(cur);
-    if (valueFromStore) element.value = valueFromStore;
+    if (checkStore) {
+      const valueFromStore = storeGet(cur);
+      if (valueFromStore) element.value = valueFromStore;
+    }
 
     return acc;
   }, {});

@@ -12,7 +12,7 @@ const clickPrintBtn = async (bounds, loadTime) => {
   let relToRight = true;
   if (bounds.width < 580) throw new Error(windowTooSmallError);
   if (bounds.width < minWidthToMove) relToRight = false;
-  moveMouseRelToWindow(relToRight ? 390 : 570, 380, bounds, [
+  moveMouseRelToWindow(relToRight ? 390 : 570, 350, bounds, [
     relToRight ? "right" : "left",
     "bottom",
   ]);

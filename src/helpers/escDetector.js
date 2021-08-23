@@ -7,7 +7,6 @@ const getEscaped = () => {
 
 let escDetectorInterval = null;
 const escDetector = () => {
-  if (escDetectorInterval) clearInterval(escDetectorInterval);
   return new Promise((resolve, reject) => {
     escDetectorInterval = setInterval(() => {
       if (getEscaped()) {
@@ -18,6 +17,10 @@ const escDetector = () => {
   });
 };
 
+const clearEscDetector = () => {
+  if (escDetectorInterval) clearInterval(escDetectorInterval);
+};
+
 ioHook.on("keypress", (e) => {
   if (e.keychar === 99 && e.ctrlKey) {
     isEscaped = true;
@@ -26,4 +29,4 @@ ioHook.on("keypress", (e) => {
 });
 ioHook.start();
 
-module.exports = { escDetector };
+module.exports = { escDetector, clearEscDetector };

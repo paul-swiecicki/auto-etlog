@@ -1,18 +1,18 @@
 const { windowManager } = require("node-window-manager");
 
 /**
- * @param {string} title
+ * @param {string} regEx
  * @returns first window found by regex match
  */
-const getWindow = (title) => {
+const getWindow = (regEx) => {
   const windows = windowManager.getWindows();
   if (!windows.length) return null;
 
   for (let i = 0; i < windows.length; i++) {
     const window = windows[i];
     const windowTitle = window.getTitle();
-    const regex = new RegExp(`^${title}`, "i");
-    const matchResult = windowTitle.match(regex);
+    const regExObj = new RegExp(regEx, "i");
+    const matchResult = windowTitle.match(regExObj);
 
     if (matchResult) return window;
   }

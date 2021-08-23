@@ -4,55 +4,106 @@ const getQuotientAndRemainder = (dividend, divisor) => {
   return { quotient, remainder };
 };
 
-const absoluteMaxMultiplier = 1.05;
-const splitHalfMaxMultiplier = 1.6;
-const doubleAbsMaxMultiplier = 2.11;
+const getComplexDivisions = (
+  curAmount,
+  maxAmount,
+  absoluteMaxMultiplier,
+  splitHalfMaxMultiplier
+) => {
+  const absoluteMax = maxAmount * absoluteMaxMultiplier + 2;
+  const dividedAmounts = [];
 
-const getDividedAmounts = (inputsValues) => {
+  if (curAmount < absoluteMax) {
+    dividedAmounts.push(curAmount);
+  } else if (curAmount < maxAmount * splitHalfMaxMultiplier) {
+    const { quotient, remainder } = getQuotientAndRemainder(curAmount, 2);
+
+    dividedAmounts.push(quotient, quotient + remainder);
+  } else if (
+    curAmount > maxAmount * 2 &&
+    curAmount < maxAmount * absoluteMaxMultiplier * 2
+  ) {
+    const { quotient, remainder } = getQuotientAndRemainder(curAmount, 2);
+
+    dividedAmounts.push(quotient, quotient + remainder);
+  } else {
+    const { quotient: fullAmounts, remainder: rest } = getQuotientAndRemainder(
+      curAmount,
+      maxAmount
+    );
+
+    for (let j = 0; j < fullAmounts; j++) {
+      dividedAmounts.push(maxAmount);
+    }
+    dividedAmounts.push(rest);
+  }
+
+  return dividedAmounts;
+};
+
+const joinSameAmounts = (dividedAmounts) => {
+  const joinedAmounts = [];
+  const divAmountsLength = dividedAmounts.length;
+
+  let prevAmount = dividedAmounts[0];
+  let count = 0;
+  for (let i = 1; i < divAmountsLength; i++) {
+    const curAmount = dividedAmounts[i];
+    if (!curAmount) continue;
+
+    count++;
+    if (prevAmount !== curAmount) {
+      joinedAmounts.push([prevAmount, count]);
+      count = 0;
+    }
+    prevAmount = curAmount;
+  }
+
+  count++;
+  if (prevAmount) joinedAmounts.push([prevAmount, count]);
+
+  return joinedAmounts;
+};
+
+const prepareAmounts = (dividedAmounts) => {
+  const preparedAmounts = [];
+  const divAmountsLength = dividedAmounts.length;
+
+  for (let i = 0; i < divAmountsLength; i++) {
+    const amount = dividedAmounts[i];
+
+    if (amount) preparedAmounts.push([amount, 1]);
+  }
+
+  return preparedAmounts;
+};
+
+const getDividedAmounts = ({
+  inputsValues,
+  isNoLimitMaxAmount = false,
+  isSingleAmounts = false,
+  absoluteMaxMultiplier = 1.05,
+  splitHalfMaxMultiplier = 1.5,
+}) => {
   const dividedAmounts = [];
   let { maxAmount, amount } = inputsValues;
-  maxAmount = parseFloat(maxAmount);
+  maxAmount = isNoLimitMaxAmount ? 1000 : parseFloat(maxAmount);
   const amounts = amount.trim().split(" ");
 
   let prevAmount = null;
   for (let i = 0; i < amounts.length; i++) {
     const curAmount = parseFloat(amounts[i]);
-    if (!curAmount) continue;
+    if (!curAmount || curAmount > 100000) continue;
 
-    console.log({ curAmount, maxAmount, x: curAmount > maxAmount });
     if (curAmount > maxAmount) {
-      const absoluteMax = maxAmount * absoluteMaxMultiplier + 3;
-      console.log(curAmount, maxAmount, absoluteMax);
-      if (curAmount < absoluteMax) {
-        const { quotient, remainder } = getQuotientAndRemainder(curAmount, 2);
+      const complexAmounts = getComplexDivisions(
+        curAmount,
+        maxAmount,
+        parseFloat(absoluteMaxMultiplier),
+        parseFloat(splitHalfMaxMultiplier)
+      );
 
-        dividedAmounts.push(quotient, quotient + remainder);
-      } else if (curAmount < maxAmount * splitHalfMaxMultiplier) {
-        const { quotient, remainder } = getQuotientAndRemainder(
-          curAmount + prevAmount,
-          2
-        );
-
-        dividedAmounts.push(quotient, quotient + remainder);
-      } else if (
-        curAmount > maxAmount * 2 &&
-        curAmount < maxAmount * doubleAbsMaxMultiplier
-      ) {
-        const { quotient, remainder } = getQuotientAndRemainder(
-          curAmount + prevAmount,
-          2
-        );
-
-        dividedAmounts.push(quotient, quotient + remainder);
-      } else {
-        const { quotient: fullAmounts, remainder: rest } =
-          getQuotientAndRemainder(curAmount, maxAmount);
-
-        for (let j = 0; j < fullAmounts; j++) {
-          dividedAmounts.push(maxAmount);
-        }
-        dividedAmounts.push(rest);
-      }
+      dividedAmounts.push(...complexAmounts);
     } else {
       dividedAmounts.push(curAmount);
     }
@@ -60,7 +111,13 @@ const getDividedAmounts = (inputsValues) => {
     prevAmount = curAmount;
   }
 
-  return dividedAmounts;
+  if (!isSingleAmounts) {
+    const joinedAmounts = joinSameAmounts(dividedAmounts);
+    return joinedAmounts;
+  } else {
+    const preparedAmounts = prepareAmounts(dividedAmounts);
+    return preparedAmounts;
+  }
 };
 
 module.exports = { getDividedAmounts };

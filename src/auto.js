@@ -10,6 +10,10 @@ const { getWindow } = require("./utils/getWindow");
 const { getElementsById } = require("./utils/getElementsById");
 const { getElementsValues } = require("./utils/getElementsValues");
 const { leftEdgeX, topEdgeY } = require("./utils/getRelativeCords");
+const { sleep } = require("./utils/sleep");
+const { displayDividedAmounts } = require("./helpers/displayDividedAmounts");
+const { storeElementsValues } = require("./utils/storeElementsValues");
+const { addListeners } = require("./helpers/addListeners");
 
 const logColor = (pixelColor) => {
   console.log(`%c ${pixelColor}`, `color: white; background: #${pixelColor}`);
@@ -74,20 +78,21 @@ const DOMLoaded = () => {
     type: "warning",
   });
 
-  const autoPrint = document.getElementById("print");
+  const { settingsInputs, inputs } = require("./elements/inputs");
+  const {
+    settingsCheckboxes,
+    checkboxesIds,
+  } = require("./elements/checkboxes");
 
-  const inputs = getElementsById([
-    "ssccAmount",
-    "additionalText",
-    "amount",
-    "maxAmount",
-  ]);
+  const checkStoredCheckboxes = (keys = []) => {
+    keys.forEach((key) => {
+      const storedVal = storeGet(key);
+      if (storedVal !== null) settingsCheckboxes[key].checked = storedVal;
+    });
+  };
+  checkStoredCheckboxes(checkboxesIds);
 
-  const settingsInputs = getElementsById([
-    "btnsGenTime",
-    "isDateInput",
-    "printWindowLoadTime",
-  ]);
+  addListeners();
 
   autoPrint.addEventListener("click", async (e) => {
     e.preventDefault();

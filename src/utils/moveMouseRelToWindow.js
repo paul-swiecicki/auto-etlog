@@ -1,16 +1,11 @@
 const robot = require("robotjs");
-const {
-  bottomEdgeY,
-  rightEdgeX,
-  leftEdgeX,
-  topEdgeY,
-} = require("./getRelativeCords");
+const { getWindowRelativeCords } = require("./getWindowRelativeCords");
 
 /**
  *
  * @param {number} x
  * @param {number} y
- * @param {object} bounds
+ * @param {object} bounds window bounds
  * @param {["top" | "left" | "bottom" | "right" ]} relTo default `["top", "left"]`
  */
 const moveMouseRelToWindow = (
@@ -19,16 +14,7 @@ const moveMouseRelToWindow = (
   bounds = { x: 0, y: 0, width: 500, height: 500 },
   relTo = ["top", "left"]
 ) => {
-  if (!bounds) throw new Error("window bounds not passed");
-  let winX = leftEdgeX(x, bounds);
-  let winY = topEdgeY(y, bounds);
-
-  if (relTo.includes("bottom")) {
-    winY = bottomEdgeY(y, bounds);
-  }
-  if (relTo.includes("right")) {
-    winX = rightEdgeX(x, bounds);
-  }
+  const [winX, winY] = getWindowRelativeCords(x, y, bounds, relTo);
   robot.moveMouse(winX, winY);
 };
 

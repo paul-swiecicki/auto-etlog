@@ -2,6 +2,11 @@
   --success: #02d421;
   --error: #f12929;
   --warning: #f1d329;
+  --info: #02c6d4;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -17,16 +22,40 @@ body {
   padding: 1.5rem 1.5rem 0 1.5rem;
 }
 
+button,
+summary,
+label,
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
 h1 {
   margin-top: 0;
 }
 
-* {
-  box-sizing: border-box;
+kbd {
+  background-color: #eee;
+  border-radius: 3px;
+  border: 1px solid #b4b4b4;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2),
+    0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
+  color: #333;
+  display: inline-block;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 4px;
+  white-space: nowrap;
 }
 
 input[type="number"] {
   width: 3.5rem;
+}
+
+summary {
+  display: block;
+}
+summary > * {
+  display: list-item;
 }
 
 .inputContainer {
@@ -69,6 +98,8 @@ input[type="number"] {
   border-left: 4px solid var(--success);
   display: flex;
   color: var(--success);
+  max-height: 20rem;
+  overflow: auto;
 }
 .resultContainer.unactive {
   display: none;
@@ -82,6 +113,11 @@ input[type="number"] {
   background: #fffde8;
   border-left: 4px solid var(--warning);
   color: var(--warning);
+}
+.resultContainer.info {
+  background: #e8fdff;
+  border-left: 4px solid var(--info);
+  color: var(--info);
 }
 
 .resultContainer svg {
@@ -107,16 +143,21 @@ input[type="number"] {
   margin-left: 1rem;
 }
 
-kbd {
-  background-color: #eee;
-  border-radius: 3px;
-  border: 1px solid #b4b4b4;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2),
-    0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
-  color: #333;
-  display: inline-block;
-  font-weight: 700;
-  line-height: 1;
-  padding: 2px 4px;
-  white-space: nowrap;
+.advancedSettings {
+  margin-top: 1.5rem;
+}
+
+.nudge {
+  margin-top: 1rem;
+}
+.nudge .inputContainer {
+  margin-top: 0;
+  display: flex;
+}
+.nudge input {
+  margin: 0 1rem 0 0.3rem;
+}
+
+.noLimitMaxAmount {
+  margin-left: 1.5rem;
 }

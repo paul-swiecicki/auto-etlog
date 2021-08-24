@@ -11,21 +11,32 @@
       <h1>Auto EtLog</h1>
       <p>Naciśnij <kbd>Ctrl</kbd> + <kbd>C</kbd> aby zatrzymać wykonywanie</p>
 
+      <!-- <label for="csvInput"></label>
+      <input type="file" name="csv" id="csvInput"> -->
+
       <form>
         <div class="inputContainer">
           <label for="ssccAmount">Ilość etykiet z jednakowym SSCC </label>
           <input type="number" id="ssccAmount" value="2" required />
         </div>
+
         <div class="inputContainer">
           <label for="additionalText">Tekst dodatkowy (seria)</label>
           <input type="text" id="additionalText" value="H 12" required />
         </div>
         <!-- <div class="spacer"></div> -->
 
-        <div class="inputContainer">
-          <label for="maxAmount">Max liczba szt. na palecie </label>
-          <input type="number" id="maxAmount" value="100" required />
+        <div class="maxAmountContainer">
+          <span class="inputContainer">
+            <label for="maxAmount">Max liczba szt. na palecie </label>
+            <input type="number" id="maxAmount" value="100" required />
+          </span>
+          <span class="checkboxContainer noLimitMaxAmount">
+            <input type="checkbox" id="noLimitMaxAmount" />
+            <label for="noLimitMaxAmount">Bez limitu</label>
+          </span>
         </div>
+
         <div class="inputContainer">
           <label for="amount">Liczba szt. na jednostkę </label>
           <label for="amount" class="additionalDesc">
@@ -78,33 +89,115 @@
           <path
             d="M16.142 2l5.858 5.858v8.284l-5.858 5.858h-8.284l-5.858-5.858v-8.284l5.858-5.858h8.284zm.829-2h-9.942l-7.029 7.029v9.941l7.029 7.03h9.941l7.03-7.029v-9.942l-7.029-7.029zm-5.971 6h2v8h-2v-8zm1 12.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"
           />
+        </form>
           <div class="textContainer">
             <div id="resultMsg" class="resultMsg"></div>
             <div id="resultDesc" class="resultDesc"></div>
           </div>
         </div>
-      </form>
     </main>
 
     <section>
       <div class="settings">
-        <h3>Ustawienia</h3>
-        <button id="find">find window</button>
-        <button id="getColor">get color</button>
-        <div class="inputContainer">
-          <label for="btnsGenTime">Czas generowania/drukowania w ms </label>
-          <input type="number" id="btnsGenTime" value="2500" required />
-        </div>
-        <div class="inputContainer">
-          <label for="printWindowLoadTime"
-            >Czas otwierania okna drukowania
-          </label>
-          <input type="number" id="printWindowLoadTime" value="1500" required />
-        </div>
-        <div class="checkboxContainer">
-          <input type="checkbox" id="isDateInput" />
-          <label for="isDateInput">Dodatkowe pole daty (data pakowania)</label>
-        </div>
+        <details>
+          <summary>
+            <h3>Ustawienia</h3>
+          </summary>
+          <button id="find">find window</button>
+          <button id="getColor">get color</button>
+
+          <div class="inputContainer">
+            <label for="btnsGenTime">Czas generowania/drukowania w ms </label>
+            <input type="number" id="btnsGenTime" value="2500" required />
+          </div>
+          <div class="inputContainer">
+            <label for="anotherPageWaitPercent"
+              >Czas drukowania każdej kolejnej strony (% czasu
+              generowania/drukowania)
+            </label>
+            <input
+              type="number"
+              id="anotherPageWaitPercent"
+              value="60"
+              required
+            />
+          </div>
+          <div class="inputContainer">
+            <label for="printWindowLoadTime"
+              >Czas otwierania okna drukowania
+            </label>
+            <input
+              type="number"
+              id="printWindowLoadTime"
+              value="1500"
+              required
+            />
+          </div>
+          <div class="checkboxContainer">
+            <input type="checkbox" id="isDateInput" />
+            <label for="isDateInput"
+              >Dodatkowe pole daty (data pakowania)</label
+            >
+          </div>
+          <div class="checkboxContainer">
+            <input type="checkbox" id="isSingleAmounts" />
+            <label for="isSingleAmounts"
+              >Drukuj tylko pojedynczo (nie łącz stron)</label
+            >
+          </div>
+          <div class="checkboxContainer">
+            <input type="checkbox" checked id="dividedAmountsPeek" />
+            <label for="dividedAmountsPeek"
+              >Podgląd podziałów</label
+            >
+          </div>
+
+          <details class="advancedSettings">
+            <summary>
+              <b>Zaawansowane</b>
+            </summary>
+            <div class="checkboxContainer">
+              <input type="checkbox" id="doValidate" />
+              <label for="doValidate">Walidacja okna</label>
+            </div>
+
+            <div class="nudge">
+              <span>Przesunięcie</span>
+              <div class="inputContainer">
+                <label for="nudgeX">x: </label>
+                <input type="number" id="nudgeX" value="0" required />
+                <label for="nudgeY">y: </label>
+                <input type="number" id="nudgeY" value="0" required />
+              </div>
+            </div>
+            <div class="inputContainer">
+              <label for="absoluteMaxMultiplier"
+                >Multiplikator absolutnego max na palecie
+              </label>
+              <input
+                type="number"
+                id="absoluteMaxMultiplier"
+                value="1.04"
+                required
+              />
+            </div>
+            <div class="inputContainer">
+              <label for="splitHalfMaxMultiplier"
+                >Multiplikator max ilości do dzielenia palet po połowie
+              </label>
+              <input
+                type="number"
+                id="splitHalfMaxMultiplier"
+                value="1.51"
+                required
+              />
+            </div>
+
+            <!-- const absoluteMaxMultiplier = 1.05;
+const splitHalfMaxMultiplier = 1.6;
+const doubleAbsMaxMultiplier = 2.11; -->
+          </details>
+        </details>
       </div>
     </section>
   </body>

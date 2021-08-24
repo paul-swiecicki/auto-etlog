@@ -174,49 +174,70 @@ const DOMLoaded = () => {
         type: "error",
       });
     }
-    const dividedAmounts = getDividedAmounts(inputsValues);
 
-    try {
-      await atProducts.clickPrintBtn(
-        bounds,
-        settingsValues.printWindowLoadTime
-      );
-    } catch (err) {
-      if (err.message === atProducts.windowTooSmallError)
-        return showResultBox({
-          msg: 'Okno EtLog jest zbyt małe aby było możliwe kliknięcie przycisku "drukuj".',
-          desc: "Powiększ okno i spróbuj ponownie.",
-          type: "error",
-        });
+    const isNoLimitMaxAmount = settingsBoxesValues.noLimitMaxAmount;
+    const dividedAmounts = getDividedAmounts({
+      inputsValues,
+      isNoLimitMaxAmount,
+      isSingleAmounts: settingsBoxesValues.isSingleAmounts,
+      absoluteMaxMultiplier: settingsValues.absoluteMaxMultiplier,
+      splitHalfMaxMultiplier: settingsValues.splitHalfMaxMultiplier,
+    });
+
+    if (!isPrintWindow) {
+      try {
+        await atProducts.clickPrintBtn(
+          bounds,
+          settingsValues.printWindowLoadTime
+        );
+      } catch (err) {
+        if (err.message === atProducts.windowTooSmallError)
+          return showResultBox({
+            msg: 'Okno EtLog jest zbyt małe aby było możliwe kliknięcie przycisku "drukuj".',
+            desc: "Powiększ okno i spróbuj ponownie.",
+            type: "error",
+          });
+      }
     }
 
-    const isDateInput = settingsInputs.isDateInput.checked;
+    const isDateInput = settingsBoxesValues.isDateInput;
+
+    const firstDivAmount = dividedAmounts[0];
 
     atPrint.fillTextInputs({
       ssccAmount: inputsValues.ssccAmount,
       additionalText: inputsValues.additionalText,
-      amount: dividedAmounts[0],
+      amount: firstDivAmount[0],
+      pages: firstDivAmount[1],
       bounds,
       isDateInput,
     });
-    await atPrint.clickPrintBtns(bounds, settingsValues.btnsGenTime);
+    await atPrint.clickPrintBtns(
+      bounds,
+      firstDivAmount[1],
+      settingsValues.btnsGenTime,
+      settingsValues.anotherPageWaitPercent
+    );
 
     let prevAmount;
     for (let i = 1; i < dividedAmounts.length; i++) {
-      const curAmount = dividedAmounts[i];
-      console.log({ curAmount, prevAmount });
+      const [curAmount, pages] = dividedAmounts[i];
 
-      if (curAmount !== prevAmount) atPrint.replaceAmount(curAmount, bounds);
+      if (curAmount !== prevAmount)
+        atPrint.replaceAmount(curAmount, pages, bounds, isDateInput);
 
-      await atPrint.clickPrintBtns(bounds, settingsValues.btnsGenTime);
+      await atPrint.clickPrintBtns(
+        bounds,
+        pages,
+        settingsValues.btnsGenTime,
+        settingsValues.anotherPageWaitPercent
+      );
       prevAmount = curAmount;
     }
     atPrint.clickCloseBtn(bounds);
+    clearEscDetector();
 
-    showResultBox({
-      msg: `Zrobione! Ilości: "${inputsValues.amount}"`,
-      desc: `Podzielone na (${dividedAmounts})`,
-    });
+    displayDividedAmounts(dividedAmounts, "success", inputsValues.amount);
   });
 };
 

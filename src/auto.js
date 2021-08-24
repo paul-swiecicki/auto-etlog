@@ -33,10 +33,17 @@ const findColor = ({ bitmap, colors }) => {
   return null;
 };
 
+const getInnerWindow = (fullTitle, innerWindow) => {
+  const regExObj = new RegExp(`etlog \\(.+\\) - \\[${innerWindow}`, "i");
+  const matchResult = fullTitle.match(regExObj);
+  return matchResult;
+};
+
 const getAndPrepareEtlogWindow = () => {
-  const window = getWindow("etlog");
-  window.restore();
-  // window.bringToTop();
+  const window = getWindow("^etlog");
+  if (!window) return null;
+
+  window.bringToTop();
 
   return window;
 };
@@ -52,15 +59,15 @@ const DOMLoaded = () => {
     console.log(bounds);
     const bitmap = robot.screen.capture(bounds.x, bounds.y, 350, bounds.height);
 
-    const pos = findColorAndLog({
-      bitmap,
-      width: bounds.width,
-      height: bounds.height,
-      color: "360036",
-      pixelsAmount: 5,
-    });
+    // const pos = findColorAndLog({
+    //   bitmap,
+    //   width: bounds.width,
+    //   height: bounds.height,
+    //   color: "360036",
+    //   pixelsAmount: 5,
+    // });
 
-    console.log(pos);
+    // console.log(pos);
   });
 
   getColorBtn.addEventListener("click", () => {
@@ -110,6 +117,19 @@ const DOMLoaded = () => {
         desc: "Upewnij się, że EtLog jest otwarty.",
         type: "error",
       });
+
+    let isPrintWindow = false;
+    const windowTitle = etlogWindow.getTitle();
+    if (getInnerWindow(windowTitle, "wydruk etykiety")) {
+      isPrintWindow = true;
+    } else if (!getInnerWindow(windowTitle, "produkty")) {
+      return showResultBox({
+        msg: "EtLog nie jest poprawnie przygotowany",
+        desc: 'Otwórz okno "Produkty" w EtLogu i zmaksymalizuj je',
+        type: "error",
+      });
+    }
+
     const bounds = etlogWindow.getBounds();
 
     const settingsBoxesValues = getElementsValues(settingsCheckboxes, true);

@@ -14,24 +14,9 @@ const { leftEdgeX, topEdgeY } = require("./utils/getRelativeCords");
 const { sleep } = require("./utils/sleep");
 const { displayDividedAmounts } = require("./helpers/displayDividedAmounts");
 const { storeElementsValues } = require("./utils/storeElementsValues");
+const { logColor } = require("./devUtils/logColor");
 
 const { addListeners } = require("./helpers/addListeners");
-
-const logColor = (pixelColor) => {
-  console.log(`%c ${pixelColor}`, `color: white; background: #${pixelColor}`);
-};
-
-const findColor = ({ bitmap, colors }) => {
-  for (let i = 0; i < bitmap.width; i++) {
-    for (let j = 0; j < bitmap.height; j++) {
-      const pixelColor = bitmap.colorAt(i, j);
-      console.log({ x: i, y: j, pixelColor });
-      if (colors.includes(pixelColor)) return { x: i, y: j };
-    }
-  }
-  console.log(colors);
-  return null;
-};
 
 const getInnerWindow = (fullTitle, innerWindow) => {
   const regExObj = new RegExp(`etlog \\(.+\\) - \\[${innerWindow}`, "i");

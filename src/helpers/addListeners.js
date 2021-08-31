@@ -1,5 +1,6 @@
 const { getElementsValues } = require("../utils/getElementsValues");
 const { displayDividedAmounts } = require("./displayDividedAmounts");
+const { getAndStoreElementsValues } = require("./getAndStoreElementsValues");
 const { getDividedAmounts } = require("./getDividedAmounts");
 // const elementsForListeners = [
 //   inputs.amount,
@@ -10,39 +11,23 @@ const { getDividedAmounts } = require("./getDividedAmounts");
 //   settingsCheckboxes.isSingleAmounts,
 // ];
 
-let getElements = () => {};
-let getElementsClosure = () => {
-  const { settingsCheckboxes } = require("../elements/checkboxes");
-  const { inputs, settingsInputs } = require("../elements/inputs");
-  return () => {
-    return {
-      settingsCheckboxes,
+const addListeners = (elements) => {
+  const getAndDisplayDivAmounts = () => {
+    const boxes = getElementsValues(elements.settingsCheckboxes, true);
+    const settings = getElementsValues(elements.settingsInputs);
+    const inputs = getElementsValues(elements.inputs);
+    if (!boxes.dividedAmountsPeek) return;
+
+    const dividedAmounts = getDividedAmounts({
+      settings,
+      boxes,
       inputs,
-      settingsInputs,
-    };
+    });
+    displayDividedAmounts(dividedAmounts, "info");
   };
-};
 
-const getAndDisplayDivAmounts = () => {
-  const { inputs, settingsInputs, settingsCheckboxes } = getElements();
-  const settingsBoxesValues = getElementsValues(settingsCheckboxes, true);
-  if (!settingsBoxesValues.dividedAmountsPeek) return;
-  const inputsValues = getElementsValues(inputs);
-  const settingsValues = getElementsValues(settingsInputs);
-
-  const dividedAmounts = getDividedAmounts({
-    inputsValues,
-    isNoLimitMaxAmount: settingsBoxesValues.noLimitMaxAmount,
-    isSingleAmounts: settingsBoxesValues.isSingleAmounts,
-    absoluteMaxMultiplier: settingsValues.absoluteMaxMultiplier,
-    splitHalfMaxMultiplier: settingsValues.splitHalfMaxMultiplier,
-  });
-  displayDividedAmounts(dividedAmounts, "info");
-};
-
-const addListeners = () => {
-  getElements = getElementsClosure();
-  const { inputs, settingsInputs, settingsCheckboxes } = getElements();
+  // getElements = getElementsClosure();
+  const { inputs, settingsInputs, settingsCheckboxes } = elements;
 
   inputs.amount.addEventListener("input", getAndDisplayDivAmounts);
   inputs.maxAmount.addEventListener("input", getAndDisplayDivAmounts);
@@ -54,7 +39,8 @@ const addListeners = () => {
     "input",
     getAndDisplayDivAmounts
   );
-  settingsCheckboxes.noLimitMaxAmount.addEventListener(
+  // fileInputs.addEventListener("input", refreshFiles);
+  settingsCheckboxes.isNoLimitMaxAmount.addEventListener(
     "change",
     getAndDisplayDivAmounts
   );

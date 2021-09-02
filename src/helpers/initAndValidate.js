@@ -39,6 +39,7 @@ const initAndValidate = async (elements) => {
 
   let isPrintWindow = false;
   const windowTitle = etlogWindow.getTitle();
+
   if (getInnerWindow(windowTitle, "wydruk etykiety")) {
     isPrintWindow = true;
   } else if (!getInnerWindow(windowTitle, "produkty")) {
@@ -49,18 +50,23 @@ const initAndValidate = async (elements) => {
     });
   }
 
-  // if (!isPrintWindow) {
-  //   try {
+  console.log(bounds);
 
-  //   } catch (err) {
-  //     if (err.message === atProducts.windowTooSmallError)
-  //       return showResultBox({
-  //         msg: 'Okno EtLog jest zbyt małe lub schowane, nie jest możliwe kliknięcie przycisku "drukuj".',
-  //         desc: "Powiększ okno i spróbuj ponownie.",
-  //         type: "error",
-  //       });
-  //   }
-  // }
+  if (bounds.x < -20 || bounds.y < -20) {
+    return showResultBox({
+      msg: 'Okno EtLog nie jest w pełni widoczne lub jest zbyt małe, nie jest możliwe kliknięcie przycisku "drukuj".',
+      desc: "Powiększ okno i spróbuj ponownie.",
+      type: "error",
+    });
+  }
+
+  if (bounds.width < 580)
+    return showResultBox({
+      msg: 'Okno EtLog jest zbyt małe lub schowane, nie jest możliwe kliknięcie przycisku "drukuj".',
+      desc: "Powiększ okno i spróbuj ponownie.",
+      type: "error",
+    });
+
   return {
     bounds,
     etlogWindow,

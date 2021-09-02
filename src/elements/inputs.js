@@ -7,6 +7,8 @@ const inputs = getElementsById([
   "maxAmount",
 ]);
 
+const fileInputs = getElementsById(["orderFile", "productsFile"], false);
+
 const settingsInputs = getElementsById([
   "btnsGenTime",
   "printWindowLoadTime",
@@ -20,4 +22,5 @@ const settingsInputs = getElementsById([
 module.exports = {
   inputs,
   settingsInputs,
+  fileInputs,
 };

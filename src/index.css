@@ -161,3 +161,7 @@ summary > * {
 .noLimitMaxAmount {
   margin-left: 1.5rem;
 }
+
+.printFromOrderBtn {
+  display: block;
+}

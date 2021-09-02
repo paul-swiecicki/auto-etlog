@@ -6,13 +6,11 @@
     <link rel="stylesheet" href="index.css" />
     <!-- <script src="auto.js" defer></script> -->
   </head>
+
   <body>
     <main>
       <h1>Auto EtLog</h1>
       <p>Naciśnij <kbd>Ctrl</kbd> + <kbd>C</kbd> aby zatrzymać wykonywanie</p>
-
-      <!-- <label for="csvInput"></label>
-      <input type="file" name="csv" id="csvInput"> -->
 
       <form>
         <div class="inputContainer">
@@ -32,8 +30,8 @@
             <input type="number" id="maxAmount" value="100" required />
           </span>
           <span class="checkboxContainer noLimitMaxAmount">
-            <input type="checkbox" id="noLimitMaxAmount" />
-            <label for="noLimitMaxAmount">Bez limitu</label>
+            <input type="checkbox" id="isNoLimitMaxAmount" />
+            <label for="isNoLimitMaxAmount">Bez limitu</label>
           </span>
         </div>
 
@@ -51,6 +49,22 @@
           />
         </div>
         <button id="print" class="printBtn">Drukuj</button>
+
+        <div class="orderPrintContainer">
+          <div class="inputContainer">
+            <label for="orderFile">Zamówienie</label>
+            <input type="file" name="orderFile" id="orderFile" />
+          </div>
+
+          <div class="inputContainer">
+            <label for="productsFile">Produkty</label>
+            <input type="file" name="productsFile" id="productsFile" />
+
+            <button id="printFromOrderBtn" class="printBtn printFromOrderBtn">
+              Drukuj z zamówienia
+            </button>
+          </div>
+        </div>
 
         <div id="resultContainer" class="resultContainer unactive">
           <svg
@@ -89,12 +103,13 @@
           <path
             d="M16.142 2l5.858 5.858v8.284l-5.858 5.858h-8.284l-5.858-5.858v-8.284l5.858-5.858h8.284zm.829-2h-9.942l-7.029 7.029v9.941l7.029 7.03h9.941l7.03-7.029v-9.942l-7.029-7.029zm-5.971 6h2v8h-2v-8zm1 12.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"
           />
-        </form>
+
           <div class="textContainer">
             <div id="resultMsg" class="resultMsg"></div>
             <div id="resultDesc" class="resultDesc"></div>
           </div>
         </div>
+      </form>
     </main>
 
     <section>
@@ -147,10 +162,10 @@
           </div>
           <div class="checkboxContainer">
             <input type="checkbox" checked id="dividedAmountsPeek" />
-            <label for="dividedAmountsPeek"
-              >Podgląd podziałów</label
-            >
+            <label for="dividedAmountsPeek">Podgląd podziałów</label>
           </div>
+
+          <footer>Program stworzony przez: paul.swiecicki2@gmail.com</footer>
 
           <details class="advancedSettings">
             <summary>
@@ -192,10 +207,6 @@
                 required
               />
             </div>
-
-            <!-- const absoluteMaxMultiplier = 1.05;
-const splitHalfMaxMultiplier = 1.6;
-const doubleAbsMaxMultiplier = 2.11; -->
           </details>
         </details>
       </div>

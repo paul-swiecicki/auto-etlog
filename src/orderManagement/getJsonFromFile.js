@@ -14,6 +14,7 @@ function getJsonFromFile(input, headers) {
         workbook.Sheets[workbook.SheetNames[0]],
         {
           header: headers,
+          defval: null,
         }
       );
 

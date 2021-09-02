@@ -63,7 +63,7 @@ const initAndValidate = async (elements) => {
   if (bounds.width < 580)
     return showResultBox({
       msg: 'Okno EtLog jest zbyt małe lub schowane, nie jest możliwe kliknięcie przycisku "drukuj".',
-      desc: "Powiększ okno i spróbuj ponownie.",
+      desc: "Powiększ lub przywróć okno z paska zadań i spróbuj ponownie.",
       type: "error",
     });
 

@@ -16,10 +16,15 @@ document.addEventListener("DOMContentLoaded", () => {
  * @param {desc} text
  * @param {"success" | "warning" | "error"} type
  */
-const showResultBox = ({ msg, desc = "", type = "success" }) => {
+const showResultBox = ({
+  msg,
+  desc = "",
+  type = "success",
+  isHtml = false,
+}) => {
   resultElements.resultContainer.className = `resultContainer ${type}`;
   resultElements.resultMsg.innerText = msg;
-  resultElements.resultDesc.innerText = desc;
+  resultElements.resultDesc[isHtml ? "innerHTML" : "innerText"] = desc;
 };
 const hideResultBox = () => {
   const resultContainer = resultElements.resultContainer;

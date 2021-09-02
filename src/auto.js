@@ -18,6 +18,7 @@ const { initAndValidate } = require("./helpers/initAndValidate");
 const atProducts = require("./atProducts");
 const { getJsonFromFile } = require("./orderManagement/getJsonFromFile");
 const { matchProducts } = require("./helpers/matchProducts");
+const { showOrder } = require("./helpers/showOrder");
 // if (elemsValues.boxes.doValidate) {
 //   try {
 //     const colorForValidation = robot.getPixelColor(
@@ -145,9 +146,6 @@ const DOMLoaded = () => {
     clearEscDetector();
   });
 
-  // const orderFileInput = document.getElementById("orderFile");
-  // const productsFileInput = document.getElementById("productsFile");
-
   const printFromOrderBtn = document.getElementById("printFromOrderBtn");
   printFromOrderBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -155,9 +153,8 @@ const DOMLoaded = () => {
       process.exit();
     });
 
-    const order = await getPreparedValuesFromOrder(
-      elements.fileInputs.orderFile
-    );
+    const { preparedValues: order, headers: orderHeaders } =
+      await getPreparedValuesFromOrder(elements.fileInputs.orderFile);
 
     const headers = {
       id: "id",
@@ -179,14 +176,16 @@ const DOMLoaded = () => {
     if (!initStuff) return clearEscDetector();
     const { bounds, elemsValues, isPrintWindow } = initStuff;
 
+    showOrder(elemsValues, matchedProducts, orderHeaders);
+
     for (let i = 0; i < order.length; i++) {
       const { amounts, product, gtin } = matchedProducts[i];
 
-      // if (!amounts.length) continue;
-
-      atProducts.typeAndFindProduct(gtin, bounds);
+      if (!amounts.length) continue;
 
       const dividedAmounts = getDividedAmounts(elemsValues, amounts);
+      atProducts.typeAndFindProduct(gtin, bounds);
+
       console.log({ product, dividedAmounts });
 
       await atProducts.clickPrintBtn(

@@ -12,11 +12,17 @@ const getPreparedValues = (order, headers) => {
       if (Object.hasOwnProperty.call(row, col)) {
         const cellValue = row[col];
 
+        const isAmount = headers.amounts.includes(col);
+        // console.log({ isAmount });
         if (col === headers.product) {
           preparedObj.product = cellValue;
-        } else if (cellValue && typeof cellValue === "number") {
+        } else if (cellValue && typeof cellValue === "number" && isAmount) {
           // console.log({ col, cellValue });
           rowValues.push(cellValue);
+        } else if (!cellValue && isAmount) {
+          rowValues.push(0);
+        } else if (!isAmount) {
+          console.log(col, cellValue);
         }
       }
     }

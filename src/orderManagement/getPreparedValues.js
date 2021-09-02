@@ -14,12 +14,13 @@ const getPreparedValues = (order, headers) => {
 
         if (col === headers.product) {
           preparedObj.product = cellValue;
-        } else if (typeof cellValue === "number") {
+        } else if (cellValue && typeof cellValue === "number") {
           // console.log({ col, cellValue });
           rowValues.push(cellValue);
         }
       }
     }
+    if (!rowValues.length) continue;
     preparedObj.amounts = rowValues;
     preparedValues.push(preparedObj);
   }

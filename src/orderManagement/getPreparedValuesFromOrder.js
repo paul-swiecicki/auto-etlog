@@ -1,4 +1,5 @@
 const XLSX = require("xlsx");
+const { getJsonFromFile } = require("./getJsonFromFile");
 const { getOrder } = require("./getOrder");
 const { getPreparedValues } = require("./getPreparedValues");
 
@@ -8,7 +9,10 @@ const headers = {
 };
 
 const getPreparedValuesFromOrder = async (input) => {
-  const order = await getOrder(input, headers);
+  const order = await getJsonFromFile(input, [
+    headers.product,
+    ...headers.amounts,
+  ]);
   console.log(order);
   const preparedValues = getPreparedValues(order, headers);
   console.log(preparedValues);

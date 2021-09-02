@@ -1,36 +1,63 @@
 // const nodeAbi = require("node-abi");
 const robot = require("robotjs");
 
-const atPrint = require("./atPrint");
-const atProducts = require("./atProducts");
 const { escDetector, clearEscDetector } = require("./helpers/escDetector");
 const { getDividedAmounts } = require("./helpers/getDividedAmounts");
-const { hideResultBox, showResultBox } = require("./helpers/manageResultBox");
+const { showResultBox } = require("./helpers/manageResultBox");
 const { getWindow } = require("./utils/getWindow");
-const { getElementsById } = require("./utils/getElementsById");
-const { getElementsValues } = require("./utils/getElementsValues");
-const { storeGet } = require("./store");
-const { leftEdgeX, topEdgeY } = require("./utils/getRelativeCords");
-const { sleep } = require("./utils/sleep");
-const { displayDividedAmounts } = require("./helpers/displayDividedAmounts");
-const { storeElementsValues } = require("./utils/storeElementsValues");
 const { logColor } = require("./devUtils/logColor");
 
 const { addListeners } = require("./helpers/addListeners");
+const { checkStoredCheckboxes } = require("./helpers/checkStoredCheckboxes");
+const {
+  getPreparedValuesFromOrder,
+} = require("./orderManagement/getPreparedValuesFromOrder");
+const { printSingle } = require("./helpers/printSingle");
+const { initAndValidate } = require("./helpers/initAndValidate");
 
-const getInnerWindow = (fullTitle, innerWindow) => {
-  const regExObj = new RegExp(`etlog \\(.+\\) - \\[${innerWindow}`, "i");
-  const matchResult = fullTitle.match(regExObj);
-  return matchResult;
-};
+const atProducts = require("./atProducts");
+const { getJsonFromFile } = require("./orderManagement/getJsonFromFile");
+const { matchProducts } = require("./helpers/matchProducts");
+// if (elemsValues.boxes.doValidate) {
+//   try {
+//     const colorForValidation = robot.getPixelColor(
+//       leftEdgeX(260, bounds),
+//       topEdgeY(70, bounds)
+//     );
+//     console.log(colorForValidation);
+//     if (
+//       colorForValidation !== "ffffff" &&
+//       colorForValidation !== "e3e3e3"
+//     ) {
+//       return showResultBox({
+//         msg: "Wygląda na to, że coś jest nie tak.",
+//         desc: "Upewnij się, że w EtLogu jest otwarte i zmaksymalizowane okno produktów.",
+//         type: "error",
+//       });
+//     }
+//   } catch (err) {
+//     return showResultBox({
+//       msg: "Nie znaleziono okna EtLog",
+//       desc: "Prawdopodobnie okno EtLog jest zminimalizowane lub jest poza ekranem.",
+//       type: "error",
+//     });
+//   }
+// }
 
-const getAndPrepareEtlogWindow = () => {
-  const window = getWindow("^etlog");
-  if (!window) return null;
+const getBasicElements = () => {
+  const { settingsInputs, inputs, fileInputs } = require("./elements/inputs");
+  const {
+    settingsCheckboxes,
+    checkboxesIds,
+  } = require("./elements/checkboxes");
+  checkStoredCheckboxes(checkboxesIds);
 
-  window.bringToTop();
-
-  return window;
+  return {
+    inputs,
+    fileInputs,
+    settingsInputs,
+    settingsCheckboxes,
+  };
 };
 
 const DOMLoaded = () => {
@@ -72,157 +99,110 @@ const DOMLoaded = () => {
     type: "warning",
   });
 
-  const { settingsInputs, inputs } = require("./elements/inputs");
-  const {
-    settingsCheckboxes,
-    checkboxesIds,
-  } = require("./elements/checkboxes");
+  // of.addEventListener("change", getOrder, false);
 
-  const checkStoredCheckboxes = (keys = []) => {
-    keys.forEach((key) => {
-      const storedVal = storeGet(key);
-      if (storedVal !== null) settingsCheckboxes[key].checked = storedVal;
-    });
-  };
-  checkStoredCheckboxes(checkboxesIds);
-
-  addListeners();
-
+  const elements = getBasicElements();
+  addListeners(elements);
   const printBtn = document.getElementById("print");
   printBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    hideResultBox();
-
-    const etlogWindow = getAndPrepareEtlogWindow();
-    await sleep(150);
-    if (!etlogWindow)
-      return showResultBox({
-        msg: "Nie znaleziono EtLoga",
-        desc: "Upewnij się, że EtLog jest otwarty.",
-        type: "error",
-      });
-
-    let isPrintWindow = false;
-    const windowTitle = etlogWindow.getTitle();
-    if (getInnerWindow(windowTitle, "wydruk etykiety")) {
-      isPrintWindow = true;
-    } else if (!getInnerWindow(windowTitle, "produkty")) {
-      return showResultBox({
-        msg: "EtLog nie jest poprawnie przygotowany",
-        desc: 'Otwórz okno "Produkty" w EtLogu i zmaksymalizuj je',
-        type: "error",
-      });
-    }
-
-    const bounds = etlogWindow.getBounds();
-
-    const settingsBoxesValues = getElementsValues(settingsCheckboxes, true);
-    storeElementsValues(settingsBoxesValues);
-    const settingsValues = getElementsValues(settingsInputs);
-    storeElementsValues(settingsValues);
-    const inputsValues = getElementsValues(inputs);
-    storeElementsValues(inputsValues);
-
-    if (settingsBoxesValues.doValidate) {
-      try {
-        const colorForValidation = robot.getPixelColor(
-          leftEdgeX(260, bounds),
-          topEdgeY(70, bounds)
-        );
-        console.log(colorForValidation);
-        if (
-          colorForValidation !== "ffffff" &&
-          colorForValidation !== "e3e3e3"
-        ) {
-          return showResultBox({
-            msg: "Wygląda na to, że coś jest nie tak.",
-            desc: "Upewnij się, że w EtLogu jest otwarte i zmaksymalizowane okno produktów.",
-            type: "error",
-          });
-        }
-      } catch (err) {
-        return showResultBox({
-          msg: "Nie znaleziono okna EtLog",
-          desc: "Prawdopodobnie okno EtLog jest zminimalizowane lub jest poza ekranem.",
-          type: "error",
-        });
-      }
-    }
     escDetector().then(() => {
       process.exit();
     });
 
-    if (!inputsValues.amount) {
+    const initStuff = await initAndValidate(elements);
+
+    if (!initStuff) return clearEscDetector();
+    const { bounds, elemsValues, isPrintWindow } = initStuff;
+
+    console.log(bounds);
+
+    const dividedAmounts = getDividedAmounts(elemsValues);
+
+    if (!elemsValues.inputs.amount) {
       return showResultBox({
         msg: "Pole 'Liczba szt. na jednostkę' jest wymagane",
         type: "error",
       });
     }
 
-    const isNoLimitMaxAmount = settingsBoxesValues.noLimitMaxAmount;
-    const dividedAmounts = getDividedAmounts({
-      inputsValues,
-      isNoLimitMaxAmount,
-      isSingleAmounts: settingsBoxesValues.isSingleAmounts,
-      absoluteMaxMultiplier: settingsValues.absoluteMaxMultiplier,
-      splitHalfMaxMultiplier: settingsValues.splitHalfMaxMultiplier,
-    });
-
+    console.log(isPrintWindow);
     if (!isPrintWindow) {
-      try {
-        await atProducts.clickPrintBtn(
-          bounds,
-          settingsValues.printWindowLoadTime
-        );
-      } catch (err) {
-        if (err.message === atProducts.windowTooSmallError)
-          return showResultBox({
-            msg: 'Okno EtLog jest zbyt małe aby było możliwe kliknięcie przycisku "drukuj".',
-            desc: "Powiększ okno i spróbuj ponownie.",
-            type: "error",
-          });
-      }
+      await atProducts.clickPrintBtn(
+        bounds,
+        elemsValues.settings.printWindowLoadTime,
+        isPrintWindow
+      );
     }
 
-    const isDateInput = settingsBoxesValues.isDateInput;
-
-    const firstDivAmount = dividedAmounts[0];
-
-    atPrint.fillTextInputs({
-      ssccAmount: inputsValues.ssccAmount,
-      additionalText: inputsValues.additionalText,
-      amount: firstDivAmount[0],
-      pages: firstDivAmount[1],
+    await printSingle({
       bounds,
-      isDateInput,
+      elemsValues,
+      dividedAmounts,
     });
-    await atPrint.clickPrintBtns(
-      bounds,
-      firstDivAmount[1],
-      settingsValues.btnsGenTime,
-      settingsValues.anotherPageWaitPercent
+
+    clearEscDetector();
+  });
+
+  // const orderFileInput = document.getElementById("orderFile");
+  // const productsFileInput = document.getElementById("productsFile");
+
+  const printFromOrderBtn = document.getElementById("printFromOrderBtn");
+  printFromOrderBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    escDetector().then(() => {
+      process.exit();
+    });
+
+    const order = await getPreparedValuesFromOrder(
+      elements.fileInputs.orderFile
     );
 
-    let prevAmount;
-    for (let i = 1; i < dividedAmounts.length; i++) {
-      const [curAmount, pages] = dividedAmounts[i];
+    const headers = {
+      id: "id",
+      product: "product",
+      gtin: "gtin",
+    };
+    const products = await getJsonFromFile(elements.fileInputs.productsFile, [
+      headers.id,
+      headers.product,
+      headers.gtin,
+    ]);
 
-      if (curAmount !== prevAmount)
-        atPrint.replaceAmount(curAmount, pages, bounds, isDateInput);
+    const matchedProducts = matchProducts(products, order, headers);
 
-      await atPrint.clickPrintBtns(
+    console.log({ order, products });
+
+    const initStuff = await initAndValidate(elements);
+
+    if (!initStuff) return clearEscDetector();
+    const { bounds, elemsValues, isPrintWindow } = initStuff;
+
+    for (let i = 0; i < order.length; i++) {
+      const { amounts, product, gtin } = matchedProducts[i];
+
+      // if (!amounts.length) continue;
+
+      atProducts.typeAndFindProduct(gtin, bounds);
+
+      const dividedAmounts = getDividedAmounts(elemsValues, amounts);
+      console.log({ product, dividedAmounts });
+
+      await atProducts.clickPrintBtn(
         bounds,
-        pages,
-        settingsValues.btnsGenTime,
-        settingsValues.anotherPageWaitPercent
+        elemsValues.settings.printWindowLoadTime,
+        isPrintWindow
       );
-      prevAmount = curAmount;
-    }
-    atPrint.clickCloseBtn(bounds);
-    clearEscDetector();
 
-    displayDividedAmounts(dividedAmounts, "success", inputsValues.amount);
+      await printSingle({
+        bounds,
+        elemsValues,
+        dividedAmounts,
+      });
+    }
+    console.log({ order });
+    clearEscDetector();
   });
 };
 

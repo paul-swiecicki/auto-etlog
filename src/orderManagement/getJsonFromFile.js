@@ -1,6 +1,6 @@
 const XLSX = require("xlsx");
 
-function getOrder(input, headers) {
+function getJsonFromFile(input, headers) {
   return new Promise((resolve, reject) => {
     console.log(input);
     var files = input.files,
@@ -24,5 +24,5 @@ function getOrder(input, headers) {
 }
 
 module.exports = {
-  getOrder,
+  getJsonFromFile,
 };

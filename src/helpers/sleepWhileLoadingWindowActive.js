@@ -6,8 +6,8 @@ const { showResultBox } = require("./manageResultBox");
 const windowCheckRate = 100;
 const maxWaitForWindow = 5000;
 
-const additionalStartWaitTime = 100;
-const additionalEndWaitTime = 100;
+const additionalStartWaitTime = 200;
+const additionalEndWaitTime = 200;
 const sleepWhileLoadingWindowActive = (loadingWindowRegEx) =>
   new Promise(async (resolve, reject) => {
     await sleep(additionalStartWaitTime);
@@ -19,6 +19,7 @@ const sleepWhileLoadingWindowActive = (loadingWindowRegEx) =>
 
       if (printingWindow) {
         canStopSleep = true;
+        clearTimeout(cantFindWindowTimeout);
       } else if (canStopSleep) {
         // } else {
         clearInterval(interval);

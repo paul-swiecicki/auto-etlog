@@ -6,6 +6,7 @@ const { hideResultBox, showResultBox } = require("./manageResultBox");
 const atProducts = require("../atProducts");
 const atPrint = require("../atPrint");
 const { getWindow } = require("../utils/getWindow");
+const { getInnerWindow } = require("./getInnerWindow");
 
 const getAndPrepareEtlogWindow = () => {
   const window = getWindow("^etlog");
@@ -14,12 +15,6 @@ const getAndPrepareEtlogWindow = () => {
   window.bringToTop();
 
   return window;
-};
-
-const getInnerWindow = (fullTitle, innerWindow) => {
-  const regExObj = new RegExp(`etlog \\(.+\\) - \\[${innerWindow}`, "i");
-  const matchResult = fullTitle.match(regExObj);
-  return matchResult;
 };
 
 const initAndValidate = async (elements) => {

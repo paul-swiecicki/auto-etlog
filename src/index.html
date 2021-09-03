@@ -60,18 +60,22 @@
 
         <div id="orderPrintContainer" class="printContainer">
           <div class="inputContainer">
-            <label for="orderFile">Zamówienie</label>
+            <label for="orderFile">Zamówienie (.xlsx)</label>
             <input type="file" name="orderFile" id="orderFile" />
           </div>
 
           <div class="inputContainer">
-            <label for="productsFile">Produkty wyeksportowane z EtLog</label>
+            <label for="productsFile"
+              >Produkty wyeksportowane z EtLog (.xlsx)</label
+            >
             <input type="file" name="productsFile" id="productsFile" />
-
-            <button id="printFromOrderBtn" class="printBtn printFromOrderBtn">
-              Drukuj z zamówienia
-            </button>
           </div>
+
+          <button id="printFromOrderBtn" class="printBtn printFromOrderBtn">
+            Podgląd zamówienia
+          </button>
+
+          <div id="orderPeek"></div>
         </div>
 
         <div id="resultContainer" class="resultContainer unactive">

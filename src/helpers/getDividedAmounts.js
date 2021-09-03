@@ -78,7 +78,10 @@ const prepareAmounts = (dividedAmounts) => {
   return preparedAmounts;
 };
 
-const getDividedAmounts = (elemsValues, amountsOverride = []) => {
+const getDividedAmounts = (
+  elemsValues,
+  overrides = { amounts: [], maxAmount: 100 }
+) => {
   const { inputs, settings, boxes } = elemsValues;
   const { isNoLimitMaxAmount, isSingleAmounts } = boxes;
   const { absoluteMaxMultiplier, splitHalfMaxMultiplier } = settings;
@@ -87,8 +90,9 @@ const getDividedAmounts = (elemsValues, amountsOverride = []) => {
 
   const dividedAmounts = [];
   let amounts;
-  if (amountsOverride.length) {
-    amounts = amount;
+  if (overrides.amounts.length) {
+    amounts = overrides.amounts;
+    maxAmount = overrides.maxAmount;
   } else {
     amounts = amount.trim().split(" ");
   }

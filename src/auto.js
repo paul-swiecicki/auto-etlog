@@ -19,6 +19,7 @@ const atProducts = require("./atProducts");
 const { getJsonFromFile } = require("./orderManagement/getJsonFromFile");
 const { matchProducts } = require("./helpers/matchProducts");
 const { showOrder } = require("./helpers/showOrder");
+const { storeSet, storeGet } = require("./store");
 // if (elemsValues.boxes.doValidate) {
 //   try {
 //     const colorForValidation = robot.getPixelColor(
@@ -103,17 +104,14 @@ const DOMLoaded = () => {
   const tabs = document.querySelectorAll("button.tab");
   const tabContainer = document.querySelector(".tabs");
   const printContainers = document.querySelectorAll(".printContainer");
-  // const orderPrintContainer = document.getElementById("orderPrintContainer");
-  // const singlePrintContainer = document.getElementById("singlePrintContainer");
+
   tabContainer.addEventListener("click", (e) => {
     if (e.target.classList.contains("unactive")) {
       tabs[0].classList.toggle("unactive");
       tabs[1].classList.toggle("unactive");
 
-      // if (e.target.classList.contains("order")) {
       printContainers[0].classList.toggle("unactive");
       printContainers[1].classList.toggle("unactive");
-      // }
     }
   });
 
@@ -163,6 +161,7 @@ const DOMLoaded = () => {
     clearEscDetector();
   });
 
+  let printFromOrderClicked = 0;
   const printFromOrderBtn = document.getElementById("printFromOrderBtn");
   printFromOrderBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -193,29 +192,50 @@ const DOMLoaded = () => {
     if (!initStuff) return clearEscDetector();
     const { bounds, elemsValues, isPrintWindow } = initStuff;
 
-    showOrder(elemsValues, matchedProducts, orderHeaders);
+    printFromOrderClicked++;
+    const orderPeek = document.getElementById("orderPeek");
+    if (printFromOrderClicked === 1) {
+      showOrder(orderPeek, matchedProducts, orderHeaders);
+      printFromOrderBtn.innerText = "Drukuj z zamówienia";
+    } else {
+      printFromOrderBtn.innerText = "Podgląd zamówienia";
+      printFromOrderClicked = 0;
 
-    for (let i = 0; i < order.length; i++) {
-      const { amounts, product, gtin } = matchedProducts[i];
+      const maxAmounts = {};
+      const maxAmountInputs = document.querySelectorAll("input.maxAmount");
+      for (let i = 0; i < maxAmountInputs.length; i++) {
+        const input = maxAmountInputs[i];
 
-      if (!amounts.length) continue;
+        const product = input.dataset.product;
+        const maxAmount = input.value;
+        maxAmounts[product] = maxAmount;
+      }
+      console.log(maxAmounts);
+      storeSet("maxAmounts", maxAmounts);
 
-      const dividedAmounts = getDividedAmounts(elemsValues, amounts);
-      atProducts.typeAndFindProduct(gtin, bounds);
+      for (let i = 0; i < order.length; i++) {
+        const { amounts, product, gtin } = matchedProducts[i];
+        if (!amounts.length) continue;
 
-      console.log({ product, dividedAmounts });
-
-      await atProducts.clickPrintBtn(
-        bounds,
-        elemsValues.settings.printWindowLoadTime,
-        isPrintWindow
-      );
-
-      await printSingle({
-        bounds,
-        elemsValues,
-        dividedAmounts,
-      });
+        const maxAmount = maxAmounts[product];
+        const dividedAmounts = getDividedAmounts(elemsValues, {
+          amounts,
+          maxAmount,
+        });
+        console.log(dividedAmounts);
+        atProducts.typeAndFindProduct(gtin, bounds);
+        console.log({ product, dividedAmounts });
+        await atProducts.clickPrintBtn(
+          bounds,
+          elemsValues.settings.printWindowLoadTime,
+          isPrintWindow
+        );
+        await printSingle({
+          bounds,
+          elemsValues,
+          dividedAmounts,
+        });
+      }
     }
     console.log({ order });
     clearEscDetector();

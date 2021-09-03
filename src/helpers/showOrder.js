@@ -1,18 +1,20 @@
+const { storeGet } = require("../store");
 const { getDividedAmounts } = require("./getDividedAmounts");
 const { showResultBox } = require("./manageResultBox");
 
-const showOrder = (elemsValues, matchedProducts, headers) => {
+const showOrder = (insertElement, matchedProducts, headers) => {
+  const maxAmounts = storeGet("maxAmounts");
   const amountsHeaders = headers.amounts;
   let table = "<table>";
 
-  table += "<tr><th>Produkt</th>";
+  table += "<h3>Podgląd zamówienia</h3> <tr><th>Produkt</th>";
 
   for (let i = 0; i < amountsHeaders.length; i++) {
     const header = amountsHeaders[i];
 
     table += `<th>${header}</th>`;
   }
-  table += "</tr>";
+  table += "<th>Max ilość na palecie</th></tr>";
 
   for (let i = 0; i < matchedProducts.length; i++) {
     const { amounts, product, gtin } = matchedProducts[i];
@@ -24,28 +26,21 @@ const showOrder = (elemsValues, matchedProducts, headers) => {
       const amount = amounts[i];
 
       table += `<td>${amount}</td>`;
-      //   const amountLength = (amount + "").length;
-      //   table += `| ${amount}${" ".repeat(6 - amountLength)} `;
-      // }
-      // table += "\n";
-
-      // for (let i = 0; i < amountsHeaders.length; i++) {
-      //   const header = amountsHeaders[i];
-
-      //   const
-      // }
 
       // const dividedAmounts = getDividedAmounts(elemsValues, amounts);
     }
-    table += "</tr>";
+
+    table += `<td><input class="maxAmount" data-product="${product}" type="number" value="${maxAmounts[product]}"></td> </tr>`;
   }
   table += "</table>";
-  showResultBox({
-    msg: "zamówienie",
-    desc: table,
-    type: "info",
-    isHtml: true,
-  });
+
+  insertElement.innerHTML = table;
+  //   showResultBox({
+  //     msg: "zamówienie",
+  //     desc: table,
+  //     type: "info",
+  //     isHtml: true,
+  //   });
 };
 
 module.exports = {

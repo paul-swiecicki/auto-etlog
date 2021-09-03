@@ -41,7 +41,6 @@ const clickPrintBtns = async (
   const parsedBtnClickWaitTime = parseFloat(btnClickWaitTime);
   moveMouseRelToWindow(200, 180, bounds, ["bottom"]);
   robot.mouseClick();
-  console.log(bounds);
   if (sleepWhileLoading) {
     // await clickPrintWhenActive(bounds);
     await sleepWhileLoadingWindowActive("^generowanie podglądów");

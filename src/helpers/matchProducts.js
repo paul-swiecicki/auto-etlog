@@ -1,5 +1,7 @@
 const stringSimilarity = require("string-similarity");
 
+const minRating = 0.2;
+
 const matchProducts = (products, order, headers) => {
   // const productsArr = [];
   // for (let j = 0; j < products.length; j++) {
@@ -21,6 +23,8 @@ const matchProducts = (products, order, headers) => {
       orderProduct,
       productsArr
     );
+
+    if (similarityObj.bestMatch.rating < minRating) continue;
     console.log(orderProduct, similarityObj.bestMatch, similarityObj);
     const matchedProduct = products[similarityObj.bestMatchIndex];
     console.log(matchedProduct);

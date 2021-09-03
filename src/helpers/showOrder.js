@@ -1,12 +1,25 @@
-const { storeGet } = require("../store");
+const { storeGet, storeSet } = require("../store");
 const { getDividedAmounts } = require("./getDividedAmounts");
 const { showResultBox } = require("./manageResultBox");
 
 const showOrder = (insertElement, matchedProducts, headers) => {
   const maxAmounts = storeGet("maxAmounts");
   const amountsHeaders = headers.amounts;
-  let table = "<table>";
 
+  let savedRowIndex = storeGet("currentOrderRow");
+
+  if (savedRowIndex) {
+    if (
+      !confirm(
+        `Program ostatnio został zamknięty podczas drukowania. Czy chcesz wznowić drukowanie? (Drukowanie zostanie rozpoczęte od ${matchedProducts[savedRowIndex]?.product})`
+      )
+    ) {
+      savedRowIndex = 0;
+      storeSet("currentOrderRow", 0);
+    }
+  }
+
+  let table = "<table>";
   table += "<h3>Podgląd zamówienia</h3> <tr><th>Produkt</th>";
 
   for (let i = 0; i < amountsHeaders.length; i++) {
@@ -20,8 +33,9 @@ const showOrder = (insertElement, matchedProducts, headers) => {
     const { amounts, product, gtin } = matchedProducts[i];
 
     if (!amounts.length) continue;
+    const doneClass = savedRowIndex && i < savedRowIndex ? "done" : "";
 
-    table += `<tr><td>${product}</td>`;
+    table += `<tr class="product ${doneClass}" data-product="${product}"><td>${product}</td>`;
     for (let i = 0; i < amountsHeaders.length; i++) {
       const amount = amounts[i];
 
@@ -35,12 +49,6 @@ const showOrder = (insertElement, matchedProducts, headers) => {
   table += "</table>";
 
   insertElement.innerHTML = table;
-  //   showResultBox({
-  //     msg: "zamówienie",
-  //     desc: table,
-  //     type: "info",
-  //     isHtml: true,
-  //   });
 };
 
 module.exports = {

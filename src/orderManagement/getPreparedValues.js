@@ -1,5 +1,6 @@
 const getPreparedValues = (order, headers) => {
   const preparedValues = [];
+  const amountColumns = headers.amounts.length;
 
   for (let i = 0; i < order.length; i++) {
     const row = order[i];
@@ -8,6 +9,7 @@ const getPreparedValues = (order, headers) => {
     //   console.log("ROW", row);
     const rowValues = [];
 
+    let zerosCount = 0;
     for (const col in row) {
       if (Object.hasOwnProperty.call(row, col)) {
         const cellValue = row[col];
@@ -21,12 +23,13 @@ const getPreparedValues = (order, headers) => {
           rowValues.push(cellValue);
         } else if (!cellValue && isAmount) {
           rowValues.push(0);
-        } else if (!isAmount) {
-          console.log(col, cellValue);
+          zerosCount++;
         }
       }
     }
-    if (!rowValues.length) continue;
+    const isNoValues = amountColumns === zerosCount;
+    zerosCount = 0;
+    if (!rowValues.length || isNoValues) continue;
     preparedObj.amounts = rowValues;
     preparedValues.push(preparedObj);
   }

@@ -10,7 +10,13 @@
   <body>
     <main>
       <h1>Auto EtLog</h1>
-      <p>Naciśnij <kbd>Ctrl</kbd> + <kbd>C</kbd> aby zatrzymać wykonywanie</p>
+      <span
+        >Naciśnij <kbd>Ctrl</kbd> + <kbd>C</kbd> aby zatrzymać wykonywanie</span
+      >
+      <div class="tabs">
+        <button class="tab order">Drukowanie z zamówienia</button>
+        <button class="tab unactive">Drukowanie pojedyncze</button>
+      </div>
 
       <form>
         <div class="inputContainer">
@@ -24,40 +30,42 @@
         </div>
         <!-- <div class="spacer"></div> -->
 
-        <div class="maxAmountContainer">
-          <span class="inputContainer">
-            <label for="maxAmount">Max liczba szt. na palecie </label>
-            <input type="number" id="maxAmount" value="100" required />
-          </span>
-          <span class="checkboxContainer noLimitMaxAmount">
-            <input type="checkbox" id="isNoLimitMaxAmount" />
-            <label for="isNoLimitMaxAmount">Bez limitu</label>
-          </span>
+        <div id="singlePrintContainer" class="printContainer unactive">
+          <div class="maxAmountContainer">
+            <span class="inputContainer">
+              <label for="maxAmount">Max liczba szt. na palecie </label>
+              <input type="number" id="maxAmount" value="100" required />
+            </span>
+            <span class="checkboxContainer noLimitMaxAmount">
+              <input type="checkbox" id="isNoLimitMaxAmount" />
+              <label for="isNoLimitMaxAmount">Bez limitu</label>
+            </span>
+          </div>
+
+          <div class="inputContainer">
+            <label for="amount">Liczba szt. na jednostkę </label>
+            <label for="amount" class="additionalDesc">
+              Oddziel wartości spacjami aby wydrukować wiele razy
+            </label>
+            <input
+              type="text"
+              id="amount"
+              value="23 19"
+              required
+              onClick="this.select();"
+            />
+          </div>
+          <button id="print" class="printBtn">Drukuj</button>
         </div>
 
-        <div class="inputContainer">
-          <label for="amount">Liczba szt. na jednostkę </label>
-          <label for="amount" class="additionalDesc">
-            Oddziel wartości spacjami aby wydrukować wiele razy
-          </label>
-          <input
-            type="text"
-            id="amount"
-            value="23 19"
-            required
-            onClick="this.select();"
-          />
-        </div>
-        <button id="print" class="printBtn">Drukuj</button>
-
-        <div class="orderPrintContainer">
+        <div id="orderPrintContainer" class="printContainer">
           <div class="inputContainer">
             <label for="orderFile">Zamówienie</label>
             <input type="file" name="orderFile" id="orderFile" />
           </div>
 
           <div class="inputContainer">
-            <label for="productsFile">Produkty</label>
+            <label for="productsFile">Produkty wyeksportowane z EtLog</label>
             <input type="file" name="productsFile" id="productsFile" />
 
             <button id="printFromOrderBtn" class="printBtn printFromOrderBtn">

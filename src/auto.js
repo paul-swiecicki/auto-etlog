@@ -100,6 +100,23 @@ const DOMLoaded = () => {
     type: "warning",
   });
 
+  const tabs = document.querySelectorAll("button.tab");
+  const tabContainer = document.querySelector(".tabs");
+  const printContainers = document.querySelectorAll(".printContainer");
+  // const orderPrintContainer = document.getElementById("orderPrintContainer");
+  // const singlePrintContainer = document.getElementById("singlePrintContainer");
+  tabContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("unactive")) {
+      tabs[0].classList.toggle("unactive");
+      tabs[1].classList.toggle("unactive");
+
+      // if (e.target.classList.contains("order")) {
+      printContainers[0].classList.toggle("unactive");
+      printContainers[1].classList.toggle("unactive");
+      // }
+    }
+  });
+
   // of.addEventListener("change", getOrder, false);
 
   const elements = getBasicElements();

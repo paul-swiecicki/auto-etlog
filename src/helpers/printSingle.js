@@ -1,7 +1,12 @@
 const atPrint = require("../atPrint");
 const { displayDividedAmounts } = require("./displayDividedAmounts");
 
-const printSingle = async ({ elemsValues, bounds, dividedAmounts }) => {
+const printSingle = async ({
+  elemsValues,
+  bounds,
+  dividedAmounts,
+  isOrderPrint = false,
+}) => {
   const { inputs, settings, boxes } = elemsValues;
 
   const isDateInput = boxes.isDateInput;
@@ -40,7 +45,8 @@ const printSingle = async ({ elemsValues, bounds, dividedAmounts }) => {
   }
   atPrint.clickCloseBtn(bounds);
 
-  displayDividedAmounts(dividedAmounts, "success", elemsValues.inputs.amount);
+  if (!isOrderPrint)
+    displayDividedAmounts(dividedAmounts, "success", elemsValues.inputs.amount);
 };
 
 module.exports = {

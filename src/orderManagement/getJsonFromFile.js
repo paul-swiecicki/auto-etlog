@@ -1,8 +1,8 @@
 const XLSX = require("xlsx");
+const { showResultBox } = require("../helpers/manageResultBox");
 
 function getJsonFromFile(input, headers) {
   return new Promise((resolve, reject) => {
-    console.log(input);
     var files = input.files,
       f = files[0];
     var reader = new FileReader();
@@ -20,7 +20,17 @@ function getJsonFromFile(input, headers) {
 
       resolve(jsonOrder);
     };
-    reader.readAsArrayBuffer(f);
+    try {
+      reader.readAsArrayBuffer(f);
+    } catch (error) {
+      showResultBox({
+        msg: "Wystąpił błąd podczas odczytywania danych z pliku",
+        desc: "Sprawdź czy wybrałeś odpowiednie pliki w formacie .xlsx",
+        type: "error",
+      });
+      console.log(error);
+      reject(error);
+    }
   });
 }
 

@@ -19,6 +19,10 @@ const matchProducts = (products, order, headers) => {
     const orderRow = order[i];
     const orderProduct = orderRow.product;
 
+    console.log({
+      orderProduct,
+      productsArr,
+    });
     const similarityObj = stringSimilarity.findBestMatch(
       orderProduct,
       productsArr

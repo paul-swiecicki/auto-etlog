@@ -203,3 +203,7 @@ footer {
 .printContainer.unactive {
   display: none;
 }
+
+tr.product.done {
+  background: rgb(204, 250, 206);
+}

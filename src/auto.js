@@ -20,6 +20,7 @@ const { getJsonFromFile } = require("./orderManagement/getJsonFromFile");
 const { matchProducts } = require("./helpers/matchProducts");
 const { showOrder } = require("./helpers/showOrder");
 const { storeSet, storeGet } = require("./store");
+const { getInnerWindow } = require("./helpers/getInnerWindow");
 // if (elemsValues.boxes.doValidate) {
 //   try {
 //     const colorForValidation = robot.getPixelColor(
@@ -185,12 +186,18 @@ const DOMLoaded = () => {
 
     const matchedProducts = matchProducts(products, order, headers);
 
-    console.log({ order, products });
-
     const initStuff = await initAndValidate(elements);
 
     if (!initStuff) return clearEscDetector();
-    const { bounds, elemsValues, isPrintWindow } = initStuff;
+    const { bounds, elemsValues, isPrintWindow, etlogWindow } = initStuff;
+    const windowTitle = etlogWindow.getTitle();
+    if (!getInnerWindow(windowTitle, "produkty")) {
+      return showResultBox({
+        msg: "EtLog nie jest poprawnie przygotowany",
+        desc: 'Otwórz okno "Produkty" w EtLogu i zmaksymalizuj je',
+        type: "error",
+      });
+    }
 
     printFromOrderClicked++;
     const orderPeek = document.getElementById("orderPeek");
@@ -210,21 +217,34 @@ const DOMLoaded = () => {
         const maxAmount = input.value;
         maxAmounts[product] = maxAmount;
       }
-      console.log(maxAmounts);
+
       storeSet("maxAmounts", maxAmounts);
 
-      for (let i = 0; i < order.length; i++) {
+      const rows = document.querySelectorAll("tr.product");
+
+      const savedRowIndex = storeGet("currentOrderRow");
+      let startFromRow = 0;
+      if (savedRowIndex) startFromRow = savedRowIndex;
+
+      showResultBox({
+        msg: "Drukowanie trwa...",
+        desc: "Nie używaj komputera, aby zakończyć drukowanie wciśnij Ctrl + C (stan drukowania zostanie zapisany)",
+        type: "info",
+      });
+
+      for (let i = startFromRow; i < matchedProducts.length; i++) {
         const { amounts, product, gtin } = matchedProducts[i];
         if (!amounts.length) continue;
 
-        const maxAmount = maxAmounts[product];
+        const maxAmount = maxAmounts[product] || 10000;
+
         const dividedAmounts = getDividedAmounts(elemsValues, {
           amounts,
           maxAmount,
         });
-        console.log(dividedAmounts);
+
         atProducts.typeAndFindProduct(gtin, bounds);
-        console.log({ product, dividedAmounts });
+
         await atProducts.clickPrintBtn(
           bounds,
           elemsValues.settings.printWindowLoadTime,
@@ -234,10 +254,19 @@ const DOMLoaded = () => {
           bounds,
           elemsValues,
           dividedAmounts,
+          isOrderPrint: true,
         });
+
+        rows[i]?.classList.add("done");
+        storeSet("currentOrderRow", i);
       }
+      storeSet("currentOrderRow", 0);
+
+      showResultBox({
+        msg: "Drukowanie zamówienia zakończone",
+      });
     }
-    console.log({ order });
+
     clearEscDetector();
   });
 };

@@ -17,7 +17,7 @@ const getAndPrepareEtlogWindow = () => {
   return window;
 };
 
-const initAndValidate = async (elements) => {
+const initAndValidate = async (elements, minWinWidth = 580) => {
   hideResultBox();
 
   const elemsValues = getAndStoreElementsValues(elements);
@@ -55,9 +55,9 @@ const initAndValidate = async (elements) => {
     });
   }
 
-  if (bounds.width < 580)
+  if (bounds.width < minWinWidth)
     return showResultBox({
-      msg: 'Okno EtLog jest zbyt małe lub schowane, nie jest możliwe kliknięcie przycisku "drukuj".',
+      msg: "Okno EtLog jest zbyt małe lub schowane, nie jest możliwe kliknięcie niektórych elementów interfejsu.",
       desc: "Powiększ lub przywróć okno z paska zadań i spróbuj ponownie.",
       type: "error",
     });

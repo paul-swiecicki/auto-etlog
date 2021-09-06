@@ -22,7 +22,6 @@ const initAndValidate = async (elements, minWinWidth = 580) => {
 
   const elemsValues = getAndStoreElementsValues(elements);
   const etlogWindow = getAndPrepareEtlogWindow();
-  const bounds = etlogWindow.getBounds();
 
   await sleep(150);
   if (!etlogWindow)
@@ -31,6 +30,8 @@ const initAndValidate = async (elements, minWinWidth = 580) => {
       desc: "Upewnij się, że EtLog jest otwarty.",
       type: "error",
     });
+
+  const bounds = etlogWindow.getBounds();
 
   let isPrintWindow = false;
   const windowTitle = etlogWindow.getTitle();

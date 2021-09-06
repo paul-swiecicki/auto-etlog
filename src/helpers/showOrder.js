@@ -11,7 +11,7 @@ const showOrder = (insertElement, matchedProducts, headers) => {
   if (savedRowIndex) {
     if (
       !confirm(
-        `Program ostatnio został zamknięty podczas drukowania. Czy chcesz wznowić drukowanie? (Drukowanie zostanie rozpoczęte od ${matchedProducts[savedRowIndex]?.product})`
+        `Drukowanie nie zostało ostatnio dokończone. Czy chcesz wznowić drukowanie? (Drukowanie zostanie rozpoczęte od ${matchedProducts[savedRowIndex]?.product})`
       )
     ) {
       savedRowIndex = 0;

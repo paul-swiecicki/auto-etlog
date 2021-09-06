@@ -61,14 +61,24 @@
         <div id="orderPrintContainer" class="printContainer">
           <div class="inputContainer">
             <label for="orderFile">Zamówienie (.xlsx)</label>
-            <input type="file" name="orderFile" id="orderFile" />
+            <input
+              type="file"
+              name="orderFile"
+              id="orderFile"
+              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            />
           </div>
 
           <div class="inputContainer">
             <label for="productsFile"
               >Produkty wyeksportowane z EtLog (.xlsx)</label
             >
-            <input type="file" name="productsFile" id="productsFile" />
+            <input
+              type="file"
+              name="productsFile"
+              id="productsFile"
+              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            />
           </div>
 
           <button id="printFromOrderBtn" class="printBtn printFromOrderBtn">

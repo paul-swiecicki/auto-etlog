@@ -1,6 +1,4 @@
 const { storeGet, storeSet } = require("../store");
-const { getDividedAmounts } = require("./getDividedAmounts");
-const { showResultBox } = require("./manageResultBox");
 
 const showOrder = (insertElement, matchedProducts, headers) => {
   const maxAmounts = storeGet("maxAmounts");

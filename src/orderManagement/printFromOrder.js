@@ -11,6 +11,8 @@ const { getPreparedValuesFromOrder } = require("./getPreparedValuesFromOrder");
 const { getWindowRelativeCords } = require("../utils/getWindowRelativeCords");
 const robot = require("robotjs");
 const atProducts = require("../atProducts");
+const { recognizeAndAddUnit } = require("./recognizeAndAddUnit");
+const { printSingle } = require("../helpers/printSingle");
 
 let printFromOrderClicked = 0;
 
@@ -29,7 +31,9 @@ const printFromOrder = async (elements, printFromOrderBtn) => {
     headers.gtin,
   ]);
 
-  const matchedProducts = matchProducts(products, order, headers);
+  const matchedProducts = recognizeAndAddUnit(
+    matchProducts(products, order, headers)
+  );
 
   const initStuff = await initAndValidate(elements, 850);
 
@@ -87,7 +91,7 @@ const printFromOrder = async (elements, printFromOrderBtn) => {
     });
 
     for (let i = startFromRow; i < matchedProducts.length; i++) {
-      const { amounts, product, gtin } = matchedProducts[i];
+      const { amounts, product, gtin, unit } = matchedProducts[i];
       if (!amounts.length) continue;
 
       const maxAmount = maxAmounts[product] || 10000;
@@ -99,6 +103,7 @@ const printFromOrder = async (elements, printFromOrderBtn) => {
 
       atProducts.typeAndFindProduct(gtin, bounds);
 
+      await atProducts.chooseTemplate(unit, bounds);
       await atProducts.clickPrintBtn(
         bounds,
         elemsValues.settings.printWindowLoadTime,

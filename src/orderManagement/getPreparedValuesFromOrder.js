@@ -1,4 +1,5 @@
-const XLSX = require("xlsx");
+const { showResultBox } = require("../helpers/manageResultBox");
+const { storeGet, storeSet } = require("../store");
 const { getJsonFromFile } = require("./getJsonFromFile");
 const { getPreparedValues } = require("./getPreparedValues");
 
@@ -8,6 +9,21 @@ const headers = {
 };
 
 const getPreparedValuesFromOrder = async (input) => {
+  if (!input.files.length) {
+    const storedValues = storeGet("preparedValues");
+    if (storedValues)
+      return {
+        preparedValues: storedValues,
+        headers,
+      };
+    else {
+      return showResultBox({
+        msg: "Wybierz plik zamówienia aby rozpocząć drukowanie",
+        type: "error",
+      });
+    }
+  }
+
   const order = await getJsonFromFile(
     input,
     [headers.product, ...headers.amounts],
@@ -16,6 +32,7 @@ const getPreparedValuesFromOrder = async (input) => {
   console.log(order);
   const preparedValues = getPreparedValues(order, headers);
   console.log(preparedValues);
+  storeSet("preparedValues", preparedValues);
 
   return { preparedValues, headers };
 };

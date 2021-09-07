@@ -4,7 +4,7 @@ const { getInnerWindow } = require("../helpers/getInnerWindow");
 const { initAndValidate } = require("../helpers/initAndValidate");
 const { showResultBox } = require("../helpers/manageResultBox");
 const { matchProducts } = require("../helpers/matchProducts");
-const { showOrder } = require("../helpers/showOrder");
+const { showOrder } = require("../orderManagement/showOrder");
 const { storeSet, storeGet } = require("../store");
 const { getJsonFromFile } = require("./getJsonFromFile");
 const { getPreparedValuesFromOrder } = require("./getPreparedValuesFromOrder");
@@ -13,6 +13,7 @@ const robot = require("robotjs");
 const atProducts = require("../atProducts");
 const { recognizeAndAddUnit } = require("./recognizeAndAddUnit");
 const { printSingle } = require("../helpers/printSingle");
+const { getProducts } = require("./getProducts");
 
 let printFromOrderClicked = 0;
 
@@ -20,20 +21,17 @@ const printFromOrder = async (elements, printFromOrderBtn) => {
   const { preparedValues: order, headers: orderHeaders } =
     await getPreparedValuesFromOrder(elements.fileInputs.orderFile);
 
-  const headers = {
-    id: "id",
-    product: "product",
-    gtin: "gtin",
-  };
-  const products = await getJsonFromFile(elements.fileInputs.productsFile, [
-    headers.id,
-    headers.product,
-    headers.gtin,
-  ]);
-
-  const matchedProducts = recognizeAndAddUnit(
-    matchProducts(products, order, headers)
+  const { headers, products } = await getProducts(
+    elements.fileInputs.productsFile
   );
+
+  if (!order || !products) return;
+
+  let matchedProducts = matchProducts(products, order, headers);
+  if (!matchedProducts) return;
+  console.log(matchedProducts);
+  matchedProducts = recognizeAndAddUnit(matchedProducts);
+  console.log(matchedProducts);
 
   const initStuff = await initAndValidate(elements, 850);
 
@@ -80,46 +78,93 @@ const printFromOrder = async (elements, printFromOrderBtn) => {
 
     const rows = document.querySelectorAll("tr.product");
 
-    const savedRowIndex = storeGet("currentOrderRow");
-    let startFromRow = 0;
-    if (savedRowIndex) startFromRow = savedRowIndex;
-
     showResultBox({
       msg: "Drukowanie trwa...",
-      desc: "Nie używaj komputera, aby zakończyć drukowanie wciśnij Ctrl + C (stan drukowania zostanie zapisany)",
+      desc: "Nie używaj komputera, aby przerwać drukowanie wciśnij Ctrl + C (stan drukowania zostanie zapisany)",
       type: "info",
     });
 
-    for (let i = startFromRow; i < matchedProducts.length; i++) {
-      const { amounts, product, gtin, unit } = matchedProducts[i];
-      if (!amounts.length) continue;
-
-      const maxAmount = maxAmounts[product] || 10000;
-
-      const dividedAmounts = getDividedAmounts(elemsValues, {
-        amounts,
-        maxAmount,
-      });
-
-      atProducts.typeAndFindProduct(gtin, bounds);
-
-      await atProducts.chooseTemplate(unit, bounds);
-      await atProducts.clickPrintBtn(
-        bounds,
-        elemsValues.settings.printWindowLoadTime,
-        isPrintWindow
-      );
-      await printSingle({
-        bounds,
-        elemsValues,
-        dividedAmounts,
-        isOrderPrint: true,
-      });
-
-      rows[i]?.classList.add("done");
-      storeSet("currentOrderRow", i);
+    const orderSave = storeGet("currentOrderPos");
+    // let startFromRow = 0;
+    // if (savedRowIndex) startFromRow = savedRowIndex;
+    let startFromX = 0;
+    let startFromY = 0;
+    if (orderSave && orderSave.y) {
+      const { x, y } = orderSave;
+      startFromX = x;
+      startFromY = y;
     }
-    storeSet("currentOrderRow", 0);
+
+    for (let x = startFromX; x < orderHeaders.amounts.length; x++) {
+      for (let y = startFromY; y < matchedProducts.length; y++) {
+        const { amounts, product, gtin, unit } = matchedProducts[y];
+        const amount = amounts[x];
+
+        const tds = rows[y].querySelectorAll(`td`);
+        if (tds.length) {
+          const td = tds[x + 1];
+          td?.classList.add("done");
+        }
+
+        if (!amounts.length || !amount) continue;
+
+        const maxAmount = maxAmounts[product] || 10000;
+
+        const dividedAmounts = getDividedAmounts(elemsValues, {
+          amounts: [amount],
+          maxAmount,
+        });
+
+        atProducts.typeAndFindProduct(gtin, bounds);
+
+        // await atProducts.chooseTemplate(unit, bounds);
+        await atProducts.clickPrintBtn(
+          bounds,
+          elemsValues.settings.printWindowLoadTime,
+          isPrintWindow
+        );
+        await printSingle({
+          bounds,
+          elemsValues,
+          dividedAmounts,
+          isOrderPrint: true,
+        });
+
+        storeSet("currentOrderPos", { x, y: y + 1 });
+      }
+      startFromY = 0;
+    }
+
+    // for (let j = startFromRow; j < matchedProducts.length; j++) {
+    //   const { amounts, product, gtin, unit } = matchedProducts[j];
+    //   if (!amounts.length) continue;
+
+    //   const maxAmount = maxAmounts[product] || 10000;
+
+    //   const dividedAmounts = getDividedAmounts(elemsValues, {
+    //     amounts: [amount],
+    //     maxAmount,
+    //   });
+
+    //   atProducts.typeAndFindProduct(gtin, bounds);
+
+    //   await atProducts.chooseTemplate(unit, bounds);
+    //   await atProducts.clickPrintBtn(
+    //     bounds,
+    //     elemsValues.settings.printWindowLoadTime,
+    //     isPrintWindow
+    //   );
+    //   await printSingle({
+    //     bounds,
+    //     elemsValues,
+    //     dividedAmounts,
+    //     isOrderPrint: true,
+    //   });
+
+    //   rows[j]?.classList.add("done");
+    //   storeSet("currentOrderRow", j);
+    // }
+    storeSet("currentOrderPos", { x: 0, y: 0 });
 
     showResultBox({
       msg: "Drukowanie zamówienia zakończone",

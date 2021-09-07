@@ -9,18 +9,10 @@ const { logColor } = require("./devUtils/logColor");
 
 const { addListeners } = require("./helpers/addListeners");
 const { checkStoredCheckboxes } = require("./helpers/checkStoredCheckboxes");
-const {
-  getPreparedValuesFromOrder,
-} = require("./orderManagement/getPreparedValuesFromOrder");
 const { printSingle } = require("./helpers/printSingle");
 const { initAndValidate } = require("./helpers/initAndValidate");
 
 const atProducts = require("./atProducts");
-const { getJsonFromFile } = require("./orderManagement/getJsonFromFile");
-const { matchProducts } = require("./helpers/matchProducts");
-const { showOrder } = require("./helpers/showOrder");
-const { storeSet, storeGet } = require("./store");
-const { getInnerWindow } = require("./helpers/getInnerWindow");
 const { printFromOrder } = require("./orderManagement/printFromOrder");
 // if (elemsValues.boxes.doValidate) {
 //   try {
@@ -117,8 +109,6 @@ const DOMLoaded = () => {
     }
   });
 
-  // of.addEventListener("change", getOrder, false);
-
   const elements = getBasicElements();
   addListeners(elements);
   const printBtn = document.getElementById("print");
@@ -145,7 +135,6 @@ const DOMLoaded = () => {
       });
     }
 
-    console.log(isPrintWindow);
     if (!isPrintWindow) {
       await atProducts.clickPrintBtn(
         bounds,
@@ -174,6 +163,14 @@ const DOMLoaded = () => {
 
     clearEscDetector();
   });
+
+  const resetOrderDisplay = () => {
+    printFromOrder(elements, printFromOrderBtn, true);
+  };
+
+  const { orderFile, productsFile } = elements.fileInputs;
+  orderFile.addEventListener("change", resetOrderDisplay, false);
+  productsFile.addEventListener("change", resetOrderDisplay, false);
 };
 
 window.addEventListener("DOMContentLoaded", DOMLoaded);

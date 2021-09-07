@@ -59,6 +59,12 @@
         </div>
 
         <div id="orderPrintContainer" class="printContainer">
+          Szablon
+          <select id="template">
+            <option value="biedronka">Biedronka</option>
+            <option value="auchan">Auchan</option>
+          </select>
+
           <div class="inputContainer">
             <label for="orderFile">Zamówienie (.xlsx)</label>
             <input
@@ -81,6 +87,10 @@
             />
           </div>
 
+          <span class="info"
+            >Jeśli któryś plik nie zostanie wybrany, zostanie załadowany ostatni
+            zapisany plik</span
+          >
           <button id="printFromOrderBtn" class="printBtn printFromOrderBtn">
             Podgląd zamówienia
           </button>

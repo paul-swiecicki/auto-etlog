@@ -4,16 +4,19 @@ const showOrder = (insertElement, matchedProducts, headers) => {
   const maxAmounts = storeGet("maxAmounts");
   const amountsHeaders = headers.amounts;
 
-  let savedRowIndex = storeGet("currentOrderRow");
+  let currentOrderPos = storeGet("currentOrderPos");
 
-  if (savedRowIndex) {
+  console.log({ currentOrderPos });
+  if (currentOrderPos.y) {
     if (
       !confirm(
-        `Drukowanie nie zostało ostatnio dokończone. Czy chcesz wznowić drukowanie? (Drukowanie zostanie rozpoczęte od ${matchedProducts[savedRowIndex]?.product})`
+        `Drukowanie nie zostało ostatnio dokończone. Czy chcesz wznowić drukowanie? (Drukowanie zostanie rozpoczęte od ${
+          matchedProducts[currentOrderPos.y]?.product
+        } w ${currentOrderPos.x + 1} kolumnie)`
       )
     ) {
-      savedRowIndex = 0;
-      storeSet("currentOrderRow", 0);
+      currentOrderPos = { x: 0, y: 0 };
+      storeSet("currentOrderPos", { x: 0, y: 0 });
     }
   }
 
@@ -27,17 +30,23 @@ const showOrder = (insertElement, matchedProducts, headers) => {
   }
   table += "<th>Max ilość na palecie</th></tr>";
 
-  for (let i = 0; i < matchedProducts.length; i++) {
-    const { amounts, product, gtin } = matchedProducts[i];
+  for (let y = 0; y < matchedProducts.length; y++) {
+    const { amounts, product, gtin } = matchedProducts[y];
 
     if (!amounts.length) continue;
-    const doneClass = savedRowIndex && i < savedRowIndex ? "done" : "";
 
-    table += `<tr class="product ${doneClass}" data-product="${product}"><td>${product}</td>`;
-    for (let i = 0; i < amountsHeaders.length; i++) {
-      const amount = amounts[i];
+    table += `<tr class="product" data-product="${product}"><td>${product}</td>`;
+    for (let x = 0; x < amountsHeaders.length; x++) {
+      const amount = amounts[x];
 
-      table += `<td>${amount}</td>`;
+      let doneClass = "";
+      if (
+        x < currentOrderPos.x ||
+        (x === currentOrderPos.x && y < currentOrderPos.y)
+      ) {
+        doneClass = "done";
+      }
+      table += `<td class=${doneClass}>${amount}</td>`;
 
       // const dividedAmounts = getDividedAmounts(elemsValues, amounts);
     }

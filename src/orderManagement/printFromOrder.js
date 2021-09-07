@@ -17,9 +17,25 @@ const { getProducts } = require("./getProducts");
 
 let printFromOrderClicked = 0;
 
-const printFromOrder = async (elements, printFromOrderBtn) => {
-  const { preparedValues: order, headers: orderHeaders } =
-    await getPreparedValuesFromOrder(elements.fileInputs.orderFile);
+const printFromOrder = async (
+  elements,
+  printFromOrderBtn,
+  resetOrderDisplay = false
+) => {
+  const orderPeek = document.getElementById("orderPeek");
+
+  if (resetOrderDisplay) {
+    printFromOrderBtn.innerText = "Podgląd zamówienia";
+    orderPeek.innerHTML = "";
+    printFromOrderClicked = 0;
+    return;
+  }
+
+  const {
+    preparedValues: order,
+    headers: orderHeaders,
+    isFromStore: isOrderFromStore,
+  } = await getPreparedValuesFromOrder(elements.fileInputs.orderFile);
 
   const { headers, products } = await getProducts(
     elements.fileInputs.productsFile
@@ -56,7 +72,6 @@ const printFromOrder = async (elements, printFromOrderBtn) => {
   }
 
   printFromOrderClicked++;
-  const orderPeek = document.getElementById("orderPeek");
   if (printFromOrderClicked === 1) {
     showOrder(orderPeek, matchedProducts, orderHeaders);
     printFromOrderBtn.innerText = "Drukuj z zamówienia";
@@ -84,12 +99,12 @@ const printFromOrder = async (elements, printFromOrderBtn) => {
       type: "info",
     });
 
-    const orderSave = storeGet("currentOrderPos");
     // let startFromRow = 0;
     // if (savedRowIndex) startFromRow = savedRowIndex;
-    let startFromX = 0;
-    let startFromY = 0;
-    if (orderSave && orderSave.y) {
+    let startFromX = 0,
+      startFromY = 0;
+    if (isOrderFromStore && orderSave && orderSave.y) {
+      const orderSave = storeGet("currentOrderPos");
       const { x, y } = orderSave;
       startFromX = x;
       startFromY = y;
@@ -117,7 +132,7 @@ const printFromOrder = async (elements, printFromOrderBtn) => {
 
         atProducts.typeAndFindProduct(gtin, bounds);
 
-        // await atProducts.chooseTemplate(unit, bounds);
+        await atProducts.chooseTemplate(unit, bounds);
         await atProducts.clickPrintBtn(
           bounds,
           elemsValues.settings.printWindowLoadTime,

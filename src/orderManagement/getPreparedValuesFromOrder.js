@@ -15,6 +15,7 @@ const getPreparedValuesFromOrder = async (input) => {
       return {
         preparedValues: storedValues,
         headers,
+        isFromStore: true,
       };
     else {
       return showResultBox({
@@ -34,7 +35,7 @@ const getPreparedValuesFromOrder = async (input) => {
   console.log(preparedValues);
   storeSet("preparedValues", preparedValues);
 
-  return { preparedValues, headers };
+  return { preparedValues, headers, isFromStore: false };
 };
 
 module.exports = {

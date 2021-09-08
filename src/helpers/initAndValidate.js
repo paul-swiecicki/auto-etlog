@@ -1,12 +1,10 @@
 const { sleep } = require("../utils/sleep");
-const { escDetector } = require("./escDetector");
 const { getAndStoreElementsValues } = require("./getAndStoreElementsValues");
 const { hideResultBox, showResultBox } = require("./manageResultBox");
 
-const atProducts = require("../atProducts");
-const atPrint = require("../atPrint");
 const { getWindow } = require("../utils/getWindow");
 const { getInnerWindow } = require("./getInnerWindow");
+const robot = require("robotjs");
 
 const getAndPrepareEtlogWindow = () => {
   const window = getWindow("^etlog");
@@ -19,6 +17,9 @@ const getAndPrepareEtlogWindow = () => {
 
 const initAndValidate = async (elements, minWinWidth = 580) => {
   hideResultBox();
+
+  elements.capsTest.focus();
+  robot.keyTap("backspace");
 
   const elemsValues = getAndStoreElementsValues(elements);
   const etlogWindow = getAndPrepareEtlogWindow();

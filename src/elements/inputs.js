@@ -19,8 +19,11 @@ const settingsInputs = getElementsById([
   "splitHalfMaxMultiplier",
 ]);
 
+const capsTest = document.getElementById("capsTest");
+
 module.exports = {
   inputs,
   settingsInputs,
   fileInputs,
+  capsTest,
 };

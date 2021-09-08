@@ -41,7 +41,12 @@ const { printFromOrder } = require("./orderManagement/printFromOrder");
 // }
 
 const getBasicElements = () => {
-  const { settingsInputs, inputs, fileInputs } = require("./elements/inputs");
+  const {
+    settingsInputs,
+    inputs,
+    fileInputs,
+    capsTest,
+  } = require("./elements/inputs");
   const {
     settingsCheckboxes,
     checkboxesIds,
@@ -53,6 +58,7 @@ const getBasicElements = () => {
     fileInputs,
     settingsInputs,
     settingsCheckboxes,
+    capsTest,
   };
 };
 
@@ -150,6 +156,12 @@ const DOMLoaded = () => {
     });
 
     clearEscDetector();
+  });
+
+  elements.capsTest.addEventListener("keyup", function (e) {
+    if (e.getModifierState("CapsLock")) {
+      robot.keyTap("capslock");
+    }
   });
 
   const printFromOrderBtn = document.getElementById("printFromOrderBtn");

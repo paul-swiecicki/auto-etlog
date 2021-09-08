@@ -103,11 +103,13 @@ const printFromOrder = async (
     // if (savedRowIndex) startFromRow = savedRowIndex;
     let startFromX = 0,
       startFromY = 0;
-    if (isOrderFromStore && orderSave && orderSave.y) {
+    if (isOrderFromStore) {
       const orderSave = storeGet("currentOrderPos");
-      const { x, y } = orderSave;
-      startFromX = x;
-      startFromY = y;
+      if (orderSave && orderSave.y) {
+        const { x, y } = orderSave;
+        startFromX = x;
+        startFromY = y;
+      }
     }
 
     for (let x = startFromX; x < orderHeaders.amounts.length; x++) {

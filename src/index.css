@@ -210,8 +210,46 @@ tr.product .done {
 }
 
 span.info {
-  color: #aaa;
+  /* color: #aaa; */
   font-size: 0.85rem;
+  padding: 0.5rem;
+  border-radius: 100%;
+  background: rgb(121, 141, 231);
+  color: #fff;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  position: relative;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+span.info:hover {
+  background: rgb(63, 115, 255);
+}
+
+span.info .text {
+  position: absolute;
+  display: none;
+  width: 20rem;
+  background: #fff;
+  color: #000;
+  padding: 0.5rem;
+  border: 2px solid #acacac;
+  font-weight: normal;
+}
+
+span.info:hover .text {
+  top: 0;
+  left: 1.5rem;
+  display: block;
+}
+
+.infoLabel {
+  display: flex;
+  align-items: center;
 }
 
 .capsTest {

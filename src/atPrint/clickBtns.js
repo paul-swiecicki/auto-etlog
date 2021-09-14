@@ -31,30 +31,19 @@ const {
  * @param {number} btnClickWaitTime amount of time to wait when print button is clicked before taking another action
  * @param {number} anotherPageWaitTimePercent percentage of `btnClickWaitTime` to wait for every page other than first
  */
-const clickPrintBtns = async (
-  bounds,
-  pages,
-  btnClickWaitTime = 2300,
-  anotherPageWaitTimePercentage = 60,
-  sleepWhileLoading = true
-) => {
-  const parsedBtnClickWaitTime = parseFloat(btnClickWaitTime);
+const clickPrintBtns = async (bounds, additionalClickWaitTime = 200) => {
   moveMouseRelToWindow(200, 180, bounds, ["bottom"]);
   robot.mouseClick();
-  if (sleepWhileLoading) {
-    // await clickPrintWhenActive(bounds);
-    await sleepWhileLoadingWindowActive("^generowanie podglądów");
-    moveMouseRelToWindow(120, 70, bounds, ["bottom"]);
-  } else {
-    await sleep(btnClickWaitTime);
-  }
+
+  await sleepWhileLoadingWindowActive(
+    "^generowanie podglądów",
+    additionalClickWaitTime
+  );
+  moveMouseRelToWindow(120, 70, bounds, ["bottom"]);
+
   robot.mouseClick();
-  const pageWaitTime =
-    (anotherPageWaitTimePercentage / 100) *
-    parsedBtnClickWaitTime *
-    (pages - 1);
-  if (sleepWhileLoading) await sleepWhileLoadingWindowActive("^drukowanie");
-  else await sleep(parsedBtnClickWaitTime + pageWaitTime);
+
+  await sleepWhileLoadingWindowActive("^drukowanie", additionalClickWaitTime);
 };
 
 const clickCloseBtn = (bounds) => {

@@ -10,11 +10,10 @@ const inputs = getElementsById([
 const fileInputs = getElementsById(["orderFile", "productsFile"], false);
 
 const settingsInputs = getElementsById([
-  "btnsGenTime",
+  "additionalClickWaitTime",
   "printWindowLoadTime",
   "nudgeX",
   "nudgeY",
-  "anotherPageWaitPercent",
   "absoluteMaxMultiplier",
   "splitHalfMaxMultiplier",
 ]);

@@ -4,26 +4,6 @@ const {
   sleepWhileLoadingWindowActive,
 } = require("../helpers/sleepWhileLoadingWindowActive");
 
-// const clickPrintWhenActive = (bounds) =>
-//   new Promise(async (resolve, reject) => {
-//     await sleep(100);
-//     console.log(bounds);
-
-//     // moveMouseRelToWindow(120, 70, bounds, ["bottom"]);
-//     const cords = getWindowRelativeCords(120, 70, bounds, ["bottom"]);
-//     // moveMouseRelToWindow(120, 70, bounds, ["bottom"]);
-//     const colorCheckInterval = setInterval(async () => {
-//       const pixelColor = robot.getPixelColor(...cords);
-//       logColor(pixelColor);
-//       if (pixelColor === "fefefe") {
-//         clearInterval(colorCheckInterval);
-//         await sleep(100);
-//         moveMouseRelToWindow(120, 70, bounds, ["bottom"]);
-//         resolve();
-//       }
-//     }, 100);
-//   });
-
 /**
  *
  * @param {object} bounds
@@ -31,19 +11,28 @@ const {
  * @param {number} btnClickWaitTime amount of time to wait when print button is clicked before taking another action
  * @param {number} anotherPageWaitTimePercent percentage of `btnClickWaitTime` to wait for every page other than first
  */
-const clickPrintBtns = async (bounds, additionalClickWaitTime = 200) => {
+const clickPrintBtns = async (bounds, settings) => {
+  const {
+    additionalClickWaitTime = 200,
+    generatingWindowName,
+    printingWindowName,
+  } = settings;
+
   moveMouseRelToWindow(200, 180, bounds, ["bottom"]);
   robot.mouseClick();
 
   await sleepWhileLoadingWindowActive(
-    "^generowanie podglądów",
+    generatingWindowName,
     additionalClickWaitTime
   );
   moveMouseRelToWindow(120, 70, bounds, ["bottom"]);
 
   robot.mouseClick();
 
-  await sleepWhileLoadingWindowActive("^drukowanie", additionalClickWaitTime);
+  await sleepWhileLoadingWindowActive(
+    printingWindowName,
+    additionalClickWaitTime
+  );
 };
 
 const clickCloseBtn = (bounds) => {

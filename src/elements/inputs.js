@@ -16,6 +16,8 @@ const settingsInputs = getElementsById([
   "nudgeY",
   "absoluteMaxMultiplier",
   "splitHalfMaxMultiplier",
+  "generatingWindowName",
+  "printingWindowName",
 ]);
 
 const capsTest = document.getElementById("capsTest");

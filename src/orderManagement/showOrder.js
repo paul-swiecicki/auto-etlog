@@ -7,7 +7,7 @@ const showOrder = (insertElement, matchedProducts, headers) => {
   let currentOrderPos = storeGet("currentOrderPos");
 
   console.log({ currentOrderPos });
-  if (currentOrderPos.y) {
+  if (currentOrderPos && currentOrderPos.y) {
     if (
       !confirm(
         `Drukowanie nie zostało ostatnio dokończone. Czy chcesz wznowić drukowanie? (Drukowanie zostanie rozpoczęte od ${
@@ -41,8 +41,9 @@ const showOrder = (insertElement, matchedProducts, headers) => {
 
       let doneClass = "";
       if (
-        x < currentOrderPos.x ||
-        (x === currentOrderPos.x && y < currentOrderPos.y)
+        currentOrderPos &&
+        (x < currentOrderPos.x ||
+          (x === currentOrderPos.x && y < currentOrderPos.y))
       ) {
         doneClass = "done";
       }
@@ -51,7 +52,9 @@ const showOrder = (insertElement, matchedProducts, headers) => {
       // const dividedAmounts = getDividedAmounts(elemsValues, amounts);
     }
 
-    table += `<td><input class="maxAmount" data-product="${product}" type="number" value="${maxAmounts[product]}"></td> </tr>`;
+    table += `<td><input class="maxAmount" data-product="${product}" type="number" value="${
+      maxAmounts && maxAmounts[product]
+    }"></td> </tr>`;
   }
   table += "</table>";
 

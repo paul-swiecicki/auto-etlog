@@ -21,12 +21,7 @@ const printSingle = async ({
     bounds,
     isDateInput,
   });
-  await atPrint.clickPrintBtns(
-    bounds,
-    firstDivAmount[1],
-    settings.btnsGenTime,
-    settings.anotherPageWaitPercent
-  );
+  await atPrint.clickPrintBtns(bounds, settings);
 
   let prevAmount;
   for (let i = 1; i < dividedAmounts.length; i++) {
@@ -35,12 +30,7 @@ const printSingle = async ({
     if (curAmount !== prevAmount)
       atPrint.replaceAmount(curAmount, pages, bounds, isDateInput);
 
-    await atPrint.clickPrintBtns(
-      bounds,
-      pages,
-      settings.btnsGenTime,
-      settings.anotherPageWaitPercent
-    );
+    await atPrint.clickPrintBtns(bounds, settings);
     prevAmount = curAmount;
   }
   atPrint.clickCloseBtn(bounds);

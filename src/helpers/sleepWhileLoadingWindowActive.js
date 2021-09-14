@@ -6,14 +6,19 @@ const { showResultBox } = require("./manageResultBox");
 const windowCheckRate = 100;
 const maxWaitForWindow = 5000;
 
-const additionalStartWaitTime = 200;
-const additionalEndWaitTime = 200;
-const sleepWhileLoadingWindowActive = (loadingWindowRegEx) =>
+const sleepWhileLoadingWindowActive = (
+  loadingWindowRegEx,
+  additionalClickWaitTime
+) =>
   new Promise(async (resolve, reject) => {
-    await sleep(additionalStartWaitTime);
-
     let canStopSleep = false,
       cantFindWindowTimeout;
+    await sleep(additionalClickWaitTime);
+    const printingWindow = getWindow(loadingWindowRegEx);
+    if (printingWindow) {
+      canStopSleep = true;
+    }
+
     const interval = setInterval(async () => {
       const printingWindow = getWindow(loadingWindowRegEx);
 
@@ -21,11 +26,10 @@ const sleepWhileLoadingWindowActive = (loadingWindowRegEx) =>
         canStopSleep = true;
         clearTimeout(cantFindWindowTimeout);
       } else if (canStopSleep) {
-        // } else {
         clearInterval(interval);
         clearTimeout(cantFindWindowTimeout);
 
-        await sleep(additionalEndWaitTime);
+        await sleep(additionalClickWaitTime);
         resolve();
       }
     }, windowCheckRate);
@@ -34,7 +38,7 @@ const sleepWhileLoadingWindowActive = (loadingWindowRegEx) =>
       clearInterval(interval);
 
       showResultBox({
-        msg: "Nie znaleziono okna drukowania",
+        msg: "Nie znaleziono okna generowania/drukowania",
         desc: "Prawdopodobnie to problem z EtLogiem",
         type: "error",
       });

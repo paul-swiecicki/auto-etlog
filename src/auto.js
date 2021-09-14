@@ -63,26 +63,7 @@ const getBasicElements = () => {
 };
 
 const DOMLoaded = () => {
-  const findBtn = document.getElementById("find");
   const getColorBtn = document.getElementById("getColor");
-
-  findBtn.addEventListener("click", () => {
-    const window = getWindow("etlog");
-    // window.bringToTop();
-    const bounds = window.getBounds();
-    console.log(bounds);
-    const bitmap = robot.screen.capture(bounds.x, bounds.y, 350, bounds.height);
-
-    // const pos = findColorAndLog({
-    //   bitmap,
-    //   width: bounds.width,
-    //   height: bounds.height,
-    //   color: "360036",
-    //   pixelsAmount: 5,
-    // });
-
-    // console.log(pos);
-  });
 
   getColorBtn.addEventListener("click", () => {
     setInterval(() => {

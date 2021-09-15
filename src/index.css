@@ -259,3 +259,13 @@ span.info:hover .text {
   opacity: 0;
   position: absolute;
 }
+
+.orderSettings .inputContainer {
+  margin-top: 0.5rem;
+}
+
+.orderSettings > div {
+  border-left: 2px solid rgb(231, 231, 231);
+  padding-left: 1rem;
+  margin-bottom: 1.5rem;
+}

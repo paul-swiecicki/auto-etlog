@@ -97,6 +97,54 @@
             />
           </div>
 
+          <details class="orderSettings" id="orderSettings">
+            <summary><b>Ustawienia zamówienia</b></summary>
+            <div>
+              <div class="inputContainer">
+                <label for="headerRowNum">Numer wiersza z nagłówkami </label>
+                <input
+                  type="number"
+                  id="headerRowNum"
+                  value="3"
+                  required
+                  onClick="this.select();"
+                />
+              </div>
+
+              <div class="inputContainer">
+                <label for="productColNum">Numer kolumny z produktami </label>
+                <input
+                  type="number"
+                  id="productCol"
+                  value="1"
+                  required
+                  onClick="this.select();"
+                />
+              </div>
+
+              <div class="inputContainer">
+                <label for="firstAmountCol"
+                  >Numer pierwszej i ostatniej kolumny ze sztukami do
+                  wydrukowania
+                </label>
+                <input
+                  type="number"
+                  id="firstAmountCol"
+                  value="2"
+                  required
+                  onClick="this.select();"
+                />
+                <input
+                  type="number"
+                  id="lastAmountCol"
+                  value="6"
+                  required
+                  onClick="this.select();"
+                />
+              </div>
+            </div>
+          </details>
+
           <div class="inputContainer">
             <div class="infoLabel">
               <span class="info"
@@ -169,6 +217,7 @@
           </div>
         </div>
 
+        <div id="rawTable"></div>
         <div id="orderPeek"></div>
       </form>
     </main>
@@ -227,6 +276,10 @@
             </summary>
             <button id="getColor">get color</button>
 
+            <div class="checkboxContainer">
+              <input type="checkbox" id="validateWindowTitle" checked />
+              <label for="validateWindowTitle">Walidacja tytułu okna</label>
+            </div>
             <div class="checkboxContainer">
               <input type="checkbox" id="doValidate" />
               <label for="doValidate">Walidacja okna</label>

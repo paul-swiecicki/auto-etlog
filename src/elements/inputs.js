@@ -18,6 +18,11 @@ const settingsInputs = getElementsById([
   "splitHalfMaxMultiplier",
   "generatingWindowName",
   "printingWindowName",
+
+  "headerRowNum",
+  "productCol",
+  "firstAmountCol",
+  "lastAmountCol",
 ]);
 
 const capsTest = document.getElementById("capsTest");

@@ -1,7 +1,23 @@
 const XLSX = require("xlsx");
 const { showResultBox } = require("../helpers/manageResultBox");
 
-function getJsonFromFile(input, headers) {
+const getHeaders = (workbook, headersRow) => {
+  console.log({ headersRow });
+  var sheet_name_list = workbook.SheetNames;
+  let columnHeaders = [];
+  for (var sheetIndex = 0; sheetIndex < sheet_name_list.length; sheetIndex++) {
+    var worksheet = workbook.Sheets[sheet_name_list[sheetIndex]];
+    for (let key in worksheet) {
+      let regEx = new RegExp(`^(\\w)(${headersRow}){1}$`);
+      if (regEx.test(key) == true) {
+        columnHeaders.push(worksheet[key].v);
+      }
+    }
+  }
+  return columnHeaders;
+};
+
+function getJsonFromFile(input, headersIds) {
   return new Promise((resolve, reject) => {
     var files = input.files,
       f = files[0];
@@ -10,7 +26,17 @@ function getJsonFromFile(input, headers) {
       var data = new Uint8Array(e.target.result);
       var workbook = XLSX.read(data, { type: "array" });
 
-      var jsonOrder = XLSX.utils.sheet_to_json(
+      // var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      // var container = document.getElementById("rawTable");
+      // container.innerHTML = XLSX.utils.sheet_to_html(worksheet, {
+      //   editable: true,
+      // });
+
+      console.log({ rawHeaders: headersIds });
+      const headers = getHeaders(workbook, headersIds.row);
+      console.log(headers);
+
+      var sheet = XLSX.utils.sheet_to_json(
         workbook.Sheets[workbook.SheetNames[0]],
         {
           header: headers,
@@ -18,7 +44,7 @@ function getJsonFromFile(input, headers) {
         }
       );
 
-      resolve(jsonOrder);
+      resolve({ sheet, headers });
     };
     try {
       reader.readAsArrayBuffer(f);

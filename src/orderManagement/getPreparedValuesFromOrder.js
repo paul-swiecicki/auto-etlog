@@ -3,17 +3,21 @@ const { storeGet, storeSet } = require("../store");
 const { getJsonFromFile } = require("./getJsonFromFile");
 const { getPreparedValues } = require("./getPreparedValues");
 
-const headers = {
-  product: "product",
-  amounts: ["DC LUBARTÓW", "DC MSZCZONÓW", "DC WYSZKÓW", "DC WARSZAWA"],
+const getHeaders = (indexes, rawHeaders) => {
+  return {
+    product: rawHeaders[indexes.product],
+    amounts: rawHeaders.slice(...indexes.amounts),
+  };
 };
 
-const getPreparedValuesFromOrder = async (input) => {
+const getPreparedValuesFromOrder = async (elements, elemsValues) => {
+  const input = elements.fileInputs.orderFile;
+
   if (!input.files.length) {
-    const storedValues = storeGet("preparedValues");
-    if (storedValues)
+    const { preparedValues, headers } = storeGet("preparedOrder");
+    if (preparedValues)
       return {
-        preparedValues: storedValues,
+        preparedValues,
         headers,
         isFromStore: true,
       };
@@ -25,15 +29,26 @@ const getPreparedValuesFromOrder = async (input) => {
     }
   }
 
-  const order = await getJsonFromFile(
+  const headersIndexes = {
+    row: parseInt(elemsValues.settings.headerRowNum),
+    product: parseInt(elemsValues.settings.productCol) - 1,
+    amounts: [
+      parseInt(elemsValues.settings.firstAmountCol) - 1,
+      parseInt(elemsValues.settings.lastAmountCol) - 1,
+    ],
+  };
+
+  const { sheet, headers: rawHeaders } = await getJsonFromFile(
     input,
-    [headers.product, ...headers.amounts],
-    true
+    headersIndexes
+    // [headers.product, ...headers.amounts],
   );
-  console.log(order);
-  const preparedValues = getPreparedValues(order, headers);
+  console.log({ headersIndexes, rawHeaders });
+  const headers = getHeaders(headersIndexes, rawHeaders);
+
+  const preparedValues = getPreparedValues(sheet, headers);
   console.log(preparedValues);
-  storeSet("preparedValues", preparedValues);
+  storeSet("preparedOrder", { preparedValues, headers });
 
   return { preparedValues, headers, isFromStore: false };
 };

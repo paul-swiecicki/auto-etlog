@@ -12,17 +12,18 @@ const matchProducts = (products, order, headers) => {
   for (let i = 0; i < order.length; i++) {
     const orderRow = order[i];
     const orderProduct = orderRow.product;
+    if (!orderProduct) continue;
 
     let similarityObj;
     try {
       similarityObj = stringSimilarity.findBestMatch(orderProduct, productsArr);
     } catch (error) {
-      console.log(error);
-      return showResultBox({
+      showResultBox({
         msg: "Coś poszło nie tak podczas wyszukiwania produktów",
         desc: "Sprawdź, czy załadowane są odpowiednie pliki",
         type: "error",
       });
+      throw error;
     }
 
     if (similarityObj.bestMatch.rating < minRating) continue;

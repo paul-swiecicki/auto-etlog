@@ -6,6 +6,7 @@ const checkboxesIds = [
   "isNoLimitMaxAmount",
   "isSingleAmounts",
   "dividedAmountsPeek",
+  "validateWindowTitle",
 ];
 
 const settingsCheckboxes = getElementsById(checkboxesIds, false);

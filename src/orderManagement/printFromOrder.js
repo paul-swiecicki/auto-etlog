@@ -16,26 +16,52 @@ const { printSingle } = require("../helpers/printSingle");
 const { getProducts } = require("./getProducts");
 
 let printFromOrderClicked = 0;
+let isFirstTime = true;
+let resetPeek;
+
+const makeResetPeek = () => {
+  const printFromOrderBtn = document.getElementById("printFromOrderBtn");
+  const orderPeek = document.getElementById("orderPeek");
+  const orderSettings = document.getElementById("orderSettings");
+  orderSettings.addEventListener("input", (e) => {
+    resetPeek();
+  });
+
+  const resetPeek = () => {
+    printFromOrderBtn.innerText = "Podgląd zamówienia";
+    orderPeek.innerHTML = "";
+    printFromOrderClicked = 0;
+  };
+
+  return resetPeek;
+};
 
 const printFromOrder = async (
   elements,
   printFromOrderBtn,
   resetOrderDisplay = false
 ) => {
-  const orderPeek = document.getElementById("orderPeek");
+  if (isFirstTime) {
+    resetPeek = makeResetPeek();
+    isFirstTime = false;
+  }
 
   if (resetOrderDisplay) {
-    printFromOrderBtn.innerText = "Podgląd zamówienia";
-    orderPeek.innerHTML = "";
-    printFromOrderClicked = 0;
-    return;
+    return resetPeek();
   }
+
+  const orderPeek = document.getElementById("orderPeek");
+
+  const initStuff = await initAndValidate(elements, 850);
+
+  if (!initStuff) return clearEscDetector();
+  const { bounds, elemsValues, isPrintWindow, etlogWindow } = initStuff;
 
   const {
     preparedValues: order,
     headers: orderHeaders,
     isFromStore: isOrderFromStore,
-  } = await getPreparedValuesFromOrder(elements.fileInputs.orderFile);
+  } = await getPreparedValuesFromOrder(elements, elemsValues);
 
   const { headers, products } = await getProducts(
     elements.fileInputs.productsFile
@@ -45,14 +71,8 @@ const printFromOrder = async (
 
   let matchedProducts = matchProducts(products, order, headers);
   if (!matchedProducts) return;
-  console.log(matchedProducts);
   matchedProducts = recognizeAndAddUnit(matchedProducts);
-  console.log(matchedProducts);
 
-  const initStuff = await initAndValidate(elements, 850);
-
-  if (!initStuff) return clearEscDetector();
-  const { bounds, elemsValues, isPrintWindow, etlogWindow } = initStuff;
   const windowTitle = etlogWindow.getTitle();
   if (!getInnerWindow(windowTitle, "produkty")) {
     return showResultBox({
@@ -99,8 +119,6 @@ const printFromOrder = async (
       type: "info",
     });
 
-    // let startFromRow = 0;
-    // if (savedRowIndex) startFromRow = savedRowIndex;
     let startFromX = 0,
       startFromY = 0;
     if (isOrderFromStore) {
@@ -140,6 +158,21 @@ const printFromOrder = async (
           elemsValues.settings.printWindowLoadTime,
           isPrintWindow
         );
+
+        if (elemsValues.boxes.validateWindowTitle) {
+          const printingWindow = getInnerWindow(
+            etlogWindow.getTitle(),
+            "wydruk etykiety"
+          );
+
+          if (!printingWindow) {
+            return showResultBox({
+              msg: "Okno drukowania nie zostało otwarte",
+              desc: "Spróbuj jeszcze raz",
+              type: "error",
+            });
+          }
+        }
         await printSingle({
           bounds,
           elemsValues,
@@ -152,35 +185,6 @@ const printFromOrder = async (
       startFromY = 0;
     }
 
-    // for (let j = startFromRow; j < matchedProducts.length; j++) {
-    //   const { amounts, product, gtin, unit } = matchedProducts[j];
-    //   if (!amounts.length) continue;
-
-    //   const maxAmount = maxAmounts[product] || 10000;
-
-    //   const dividedAmounts = getDividedAmounts(elemsValues, {
-    //     amounts: [amount],
-    //     maxAmount,
-    //   });
-
-    //   atProducts.typeAndFindProduct(gtin, bounds);
-
-    //   await atProducts.chooseTemplate(unit, bounds);
-    //   await atProducts.clickPrintBtn(
-    //     bounds,
-    //     elemsValues.settings.printWindowLoadTime,
-    //     isPrintWindow
-    //   );
-    //   await printSingle({
-    //     bounds,
-    //     elemsValues,
-    //     dividedAmounts,
-    //     isOrderPrint: true,
-    //   });
-
-    //   rows[j]?.classList.add("done");
-    //   storeSet("currentOrderRow", j);
-    // }
     storeSet("currentOrderPos", { x: 0, y: 0 });
 
     showResultBox({

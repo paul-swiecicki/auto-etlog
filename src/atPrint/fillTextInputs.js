@@ -1,18 +1,15 @@
 const robot = require("robotjs");
 const { moveMouseRelToWindow } = require("../utils/moveMouseRelToWindow");
-const { fillSerial } = require("./fillSerial");
+const { fillDate } = require("./fillDate");
 
 const defaultSsccAmount = 2;
 const defaultPages = 1;
 
-const fillTextInputs = ({
-  ssccAmount = 1,
-  pages = 1,
-  additionalText = "A 01",
-  amount = 1,
-  isDateInput = false,
-  bounds,
-}) => {
+const fillTextInputs = ({ elemsValues, pages = 1, amount = 1, bounds }) => {
+  const { inputs, boxes } = elemsValues;
+  const { ssccAmount, additionalText } = inputs;
+  const { isDateInput } = boxes;
+
   moveMouseRelToWindow(220, 100, bounds);
   robot.mouseClick();
   if (ssccAmount != defaultSsccAmount) {
@@ -25,15 +22,11 @@ const fillTextInputs = ({
     robot.typeString(pages);
   }
   robot.keyTap("tab");
+  robot.keyTap("a", "control");
+  robot.typeString(additionalText);
   if (isDateInput) {
-    robot.keyTap("a", "control");
-    robot.typeString(additionalText);
-    // fillSerial();
     robot.keyTap("tab");
-    // atPrintFillDate();
-  } else {
-    robot.keyTap("a", "control");
-    robot.typeString(additionalText);
+    fillDate(elemsValues.inputs.packDate);
   }
   robot.keyTap("tab");
   robot.keyTap("a", "control");

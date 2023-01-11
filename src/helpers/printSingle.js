@@ -14,12 +14,10 @@ const printSingle = async ({
   const firstDivAmount = dividedAmounts[0];
 
   atPrint.fillTextInputs({
-    ssccAmount: inputs.ssccAmount,
-    additionalText: inputs.additionalText,
+    elemsValues,
     amount: firstDivAmount[0],
     pages: firstDivAmount[1],
     bounds,
-    isDateInput,
   });
   await atPrint.clickPrintBtns(bounds, settings);
 

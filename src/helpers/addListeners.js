@@ -29,6 +29,15 @@ const addListeners = (elements) => {
   // getElements = getElementsClosure();
   const { inputs, settingsInputs, settingsCheckboxes } = elements;
 
+  settingsCheckboxes.isDateInput.addEventListener("change", (e) => {
+    const target = e.target;
+    const checked = target.checked;
+
+    const packDateContainer = inputs.packDate.closest(".inputContainer");
+    if (checked) packDateContainer.classList.remove("invisible");
+    else packDateContainer.classList.add("invisible");
+  });
+
   inputs.amount.addEventListener("input", getAndDisplayDivAmounts);
   inputs.maxAmount.addEventListener("input", getAndDisplayDivAmounts);
   settingsInputs.absoluteMaxMultiplier.addEventListener(

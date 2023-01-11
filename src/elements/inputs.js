@@ -6,6 +6,9 @@ const inputs = getElementsById([
   "amount",
   "maxAmount",
 ]);
+const packDate = document.getElementById("packDate");
+inputs.packDate = packDate;
+packDate.valueAsDate = new Date();
 
 const fileInputs = getElementsById(["orderFile", "productsFile"], false);
 

@@ -269,3 +269,7 @@ span.info:hover .text {
   padding-left: 1rem;
   margin-bottom: 1.5rem;
 }
+
+.inputContainer.invisible {
+  display: none;
+}

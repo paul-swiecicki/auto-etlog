@@ -1,4 +1,3 @@
-// const nodeAbi = require("node-abi");
 const robot = require("robotjs");
 
 const { escDetector, clearEscDetector } = require("./helpers/escDetector");
@@ -14,31 +13,6 @@ const { initAndValidate } = require("./helpers/initAndValidate");
 
 const atProducts = require("./atProducts");
 const { printFromOrder } = require("./orderManagement/printFromOrder");
-// if (elemsValues.boxes.doValidate) {
-//   try {
-//     const colorForValidation = robot.getPixelColor(
-//       leftEdgeX(260, bounds),
-//       topEdgeY(70, bounds)
-//     );
-//     console.log(colorForValidation);
-//     if (
-//       colorForValidation !== "ffffff" &&
-//       colorForValidation !== "e3e3e3"
-//     ) {
-//       return showResultBox({
-//         msg: "Wygląda na to, że coś jest nie tak.",
-//         desc: "Upewnij się, że w EtLogu jest otwarte i zmaksymalizowane okno produktów.",
-//         type: "error",
-//       });
-//     }
-//   } catch (err) {
-//     return showResultBox({
-//       msg: "Nie znaleziono okna EtLog",
-//       desc: "Prawdopodobnie okno EtLog jest zminimalizowane lub jest poza ekranem.",
-//       type: "error",
-//     });
-//   }
-// }
 
 const getBasicElements = () => {
   const {

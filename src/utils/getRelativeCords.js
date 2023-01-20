@@ -1,5 +1,4 @@
 const { getNudgeX, getNudgeY } = require("../helpers/getNudge");
-// console.log(getNudgeX, getNudgeY);
 
 const leftEdgeX = (x, bounds) => {
   return bounds.x + x + getNudgeX();

@@ -17,8 +17,8 @@ const templatesForUnits = {
   default: 2,
 };
 
+// open template list
 const chooseTemplate = async (unit, bounds) => {
-  // open template list
   moveMouseRelToWindow(360, 15, bounds, ["bottom"]);
   robot.mouseClick();
   await sleep(1000);

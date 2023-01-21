@@ -1,7 +1,6 @@
 const { getWindow } = require("../utils/getWindow");
 const { sleep } = require("../utils/sleep");
 const { showResultBox } = require("./manageResultBox");
-// const { showResultBox } = require("./helpers/manageResultBox");
 
 const windowCheckRate = 100;
 const maxWaitForWindow = 5000;

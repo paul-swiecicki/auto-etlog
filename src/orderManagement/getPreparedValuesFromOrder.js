@@ -41,13 +41,11 @@ const getPreparedValuesFromOrder = async (elements, elemsValues) => {
   const { sheet, headers: rawHeaders } = await getJsonFromFile(
     input,
     headersIndexes
-    // [headers.product, ...headers.amounts],
   );
-  console.log({ headersIndexes, rawHeaders });
+
   const headers = getHeaders(headersIndexes, rawHeaders);
 
   const preparedValues = getPreparedValues(sheet, headers);
-  console.log(preparedValues);
   storeSet("preparedOrder", { preparedValues, headers });
 
   return { preparedValues, headers, isFromStore: false };

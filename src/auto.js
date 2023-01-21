@@ -42,7 +42,6 @@ const DOMLoaded = () => {
   getColorBtn.addEventListener("click", () => {
     setInterval(() => {
       const cords = robot.getMousePos();
-      console.log(cords);
       const bitmap = robot.screen.capture(cords.x, cords.y, 10, 10);
 
       const pixelColor = bitmap.colorAt(0, 0);
@@ -84,8 +83,6 @@ const DOMLoaded = () => {
 
     if (!initStuff) return clearEscDetector();
     const { bounds, elemsValues, isPrintWindow } = initStuff;
-
-    console.log(bounds);
 
     const dividedAmounts = getDividedAmounts(elemsValues);
 

@@ -6,7 +6,6 @@ const showOrder = (insertElement, matchedProducts, headers) => {
 
   let currentOrderPos = storeGet("currentOrderPos");
 
-  console.log({ currentOrderPos });
   if (currentOrderPos && currentOrderPos.y) {
     if (
       !confirm(
@@ -48,8 +47,6 @@ const showOrder = (insertElement, matchedProducts, headers) => {
         doneClass = "done";
       }
       table += `<td class=${doneClass}>${amount}</td>`;
-
-      // const dividedAmounts = getDividedAmounts(elemsValues, amounts);
     }
 
     table += `<td><input class="maxAmount" data-product="${product}" type="number" value="${

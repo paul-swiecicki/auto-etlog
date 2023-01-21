@@ -25,7 +25,6 @@ ioHook.on("keypress", (e) => {
   if (e.keychar === 99 && e.ctrlKey) {
     isEscaped = true;
   }
-  // {keychar: 'f', keycode: 19, rawcode: 15, type: 'keypress'}
 });
 ioHook.start();
 

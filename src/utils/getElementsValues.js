@@ -1,5 +1,3 @@
-// const { storeSet } = require("../store");
-
 /**
  * @param {object} elements
  * @param {?boolean} checkboxes
@@ -13,7 +11,6 @@ const getElementsValues = (elements, checkboxes = false) => {
       const value = element[checkboxes ? "checked" : "value"];
 
       values[key] = value;
-      // storeSet(key, value);
     }
   }
   return values;

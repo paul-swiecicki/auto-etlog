@@ -2,7 +2,6 @@ const XLSX = require("xlsx");
 const { showResultBox } = require("../helpers/manageResultBox");
 
 const getHeaders = (workbook, headersRow) => {
-  console.log({ headersRow });
   var sheet_name_list = workbook.SheetNames;
   let columnHeaders = [];
   for (var sheetIndex = 0; sheetIndex < sheet_name_list.length; sheetIndex++) {
@@ -26,15 +25,7 @@ function getJsonFromFile(input, headersIds) {
       var data = new Uint8Array(e.target.result);
       var workbook = XLSX.read(data, { type: "array" });
 
-      // var worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      // var container = document.getElementById("rawTable");
-      // container.innerHTML = XLSX.utils.sheet_to_html(worksheet, {
-      //   editable: true,
-      // });
-
-      console.log({ rawHeaders: headersIds });
       const headers = getHeaders(workbook, headersIds.row);
-      console.log(headers);
 
       var sheet = XLSX.utils.sheet_to_json(
         workbook.Sheets[workbook.SheetNames[0]],

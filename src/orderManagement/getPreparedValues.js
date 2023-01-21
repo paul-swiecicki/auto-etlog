@@ -6,7 +6,6 @@ const getPreparedValues = (order, headers) => {
     const row = order[i];
     const preparedObj = {};
 
-    //   console.log("ROW", row);
     const rowValues = [];
 
     let zerosCount = 0;
@@ -15,11 +14,9 @@ const getPreparedValues = (order, headers) => {
         const cellValue = row[col];
 
         const isAmount = headers.amounts.includes(col);
-        // console.log({ isAmount });
         if (col === headers.product) {
           preparedObj.product = cellValue;
         } else if (cellValue && typeof cellValue === "number" && isAmount) {
-          // console.log({ col, cellValue });
           rowValues.push(cellValue);
         } else if (!cellValue && isAmount) {
           rowValues.push(0);

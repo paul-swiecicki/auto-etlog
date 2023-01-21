@@ -2,7 +2,6 @@ const { moveMouseRelToWindow } = require("../utils/moveMouseRelToWindow");
 const robot = require("robotjs");
 
 const typeAndFindProduct = (gtin, bounds) => {
-  // moveMouseRelToWindow(170, 110, bounds);
   moveMouseRelToWindow(60, 110, bounds, ["right"]);
   robot.mouseClick();
 

@@ -47,8 +47,6 @@ const initAndValidate = async (elements, minWinWidth = 580) => {
     });
   }
 
-  console.log(bounds);
-
   if (bounds.x < -20 || bounds.y < -20) {
     return showResultBox({
       msg: 'Okno EtLog nie jest w pełni widoczne lub jest zbyt małe, nie jest możliwe kliknięcie przycisku "drukuj".',
